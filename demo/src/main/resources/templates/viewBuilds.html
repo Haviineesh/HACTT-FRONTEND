@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Builds</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Custom styles to align only the search and filter box to the left */
+        .search-form {
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+    <div class="container mt-4">
+        <h1 class="mb-4">Builds</h1>
+
+        <!-- Displaying Success or Error messages -->
+        <div th:if="${success}" class="alert alert-success">
+            <p th:text="${success}"></p>
+        </div>
+        <div th:if="${error}" class="alert alert-danger">
+            <p th:text="${error}"></p>
+        </div>
+
+        <!-- Search and Filter Form -->
+        <form id="buildFilterForm" th:action="@{/viewBuilds}" method="get" class="form-inline mb-4">
+            <select name="filter" class="form-control mr-2" onchange="submitForm()">
+                <option value="all" th:selected="${filter == 'all'}">All</option>
+                <option value="active" th:selected="${filter == 'active'}">Active</option>
+                <option value="inactive" th:selected="${filter == 'inactive'}">Inactive</option>
+            </select>
+            <input type="text" name="search" class="form-control mr-2" th:value="${search}" placeholder="Search builds"
+                onkeyup="submitForm()">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+
+        <script>
+            function submitForm() {
+                document.getElementById('buildFilterForm').submit();
+            }
+        </script>
+
+        <!-- Build List -->
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Release Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="build : ${builds}">
+                    <td th:text="${build.buildTitle}"></td>
+                    <td th:text="${build.buildDescription}"></td>
+                    <td th:text="${build.buildReleaseDate}"></td>
+                    <td>
+                        <!-- View Details -->
+                        <a th:href="@{/viewBuildDetails/{id}(id=${build.buildID})}" class="btn btn-info">View</a>
+                        <!-- Edit -->
+                        <a th:href="@{/editBuild(id=${build.buildID})}" class="btn btn-warning">Edit</a>
+                        <!-- Delete with confirmation -->
+                        <form action="/deleteBuild" method="post" style="display:inline;"
+                            onsubmit="return confirmDelete();">
+                            <input type="hidden" name="id" th:value="${build.buildID}">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Create New Build Button -->
+        <div th:if="${!isStakeholder}">
+            <a href="/createBuild" class="btn btn-primary">Create New Build</a>
+        </div>
+
+    </div>
+
+    <!-- Confirm Delete Script -->
+    <script>
+        function confirmDelete() {
+            return confirm("Are you sure you want to delete this build?");
+        }
+    </script>
+
+    <!-- Bootstrap JS (for modal functionality and responsive elements) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

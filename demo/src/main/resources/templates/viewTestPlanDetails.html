@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Test Plan Details</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    <!-- Include the Navbar fragment -->
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container mt-4">
+        <h1 class="mb-4">Test Plan Details</h1>
+        <!-- Display the test plan details or error message -->
+        <div th:if="${testPlan != null}">
+            <div class="card">
+                <div class="card-body">
+                    <!-- Display test plan information -->
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th>ID</th>
+                                <td th:text="${testPlan.testPlanID}"></td>
+                            </tr>
+                            <tr>
+                                <th>Name</th>
+                                <td th:text="${testPlan.testPlanName}"></td>
+                            </tr>
+                            <tr>
+                                <th>Description</th>
+                                <td th:utext="${testPlan.description}"></td> <!-- Use th:text to avoid XSS -->
+                            </tr>
+                            <tr>
+                                <th>Active</th>
+                                <td th:text="${testPlan.isActive ? 'Yes' : 'No'}"></td>
+                            </tr>
+                            <tr>
+                                <th>Public</th>
+                                <td th:text="${testPlan.isPublic ? 'Yes' : 'No'}"></td>
+                            </tr>
+
+                            <tr>
+                                <th>Build</th>
+                                <td th:text="${buildTitle}"></td>
+                            </tr>
+
+                            <tr>
+                                <th>Build Version</th>
+                                <td th:text="${buildVersion}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Assigned Test Suites Section -->
+                    <h4>Assigned Test Suites</h4>
+                    <table class="table table-striped"
+                        th:if="${assignedTestSuites != null and !assignedTestSuites.isEmpty()}">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Test Suite Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="suite, stat : ${assignedTestSuites}">
+                                <td th:text="${stat.index + 1}"></td>
+                                <td th:text="${suite.testSuiteName}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- If no test suites are assigned, show this message -->
+                    <div th:if="${assignedTestSuites == null or assignedTestSuites.isEmpty()}">
+                        <p>No test suites assigned to this test plan.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- If no test plan is found, display an error message -->
+        <div th:if="${testPlan == null}" class="alert alert-warning">
+            No test plan found. It might have been deleted or doesn't exist.
+        </div>
+        <!-- Button to go back to the list of test plans -->
+        <a href="/viewTestPlans" class="btn btn-primary mt-3">Back to Test Plans</a>
+    </div>
+
+
+
+    <!-- Bootstrap JS (for interactivity) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

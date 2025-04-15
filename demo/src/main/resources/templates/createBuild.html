@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create a New Build</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- CKEditor -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/38.0.1/classic/ckeditor.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-submit {
+            background-color: #007bff;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .btn-submit:hover {
+            background-color: #0056b3;
+        }
+
+        a.back-link {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a.back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Include the Navbar fragment -->
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container mt-4">
+        <h2 class="mb-4">Create a New Build</h2>
+
+        <!--Success or Error Message -->
+        <div th:if="${successMessage}" class="alert alert-success">
+            <span th:text="${successMessage}"></span>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <!-- Build Form -->
+        <form action="/createBuild" method="POST">
+
+            <!-- Title Field -->
+            <div class="form-group">
+                <label for="title" class="form-label">Title:</label>
+                <input type="text" id="buildTitle" name="buildTitle" class="form-control" required>
+            </div>
+
+            <!-- Description -->
+            <div class="form-group">
+                <label for="description" class="form-label">Description:</label>
+                <textarea id="description" name="buildDescription" class="form-control" rows="10" required></textarea>
+            </div>
+
+            <!-- Release Date -->
+            <div class="form-group">
+                <label for="releaseDate" class="form-label">Release Date:</label>
+                <input type="date" id="releaseDate" name="buildReleaseDate" class="form-control" required>
+            </div>
+
+            <!-- Is Active Checkbox -->
+            <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" id="isActive" name="isBuildActive">
+                <label for="isActive" class="form-check-label">Is Active</label>
+            </div>
+
+            <!-- Is Open Checkbox -->
+            <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" id="isOpen" name="isBuildOpen">
+                <label for="isOpen" class="form-check-label">Is Open</label>
+            </div>
+
+            <div class="form-group">
+                <label for="buildVersion" class="form-label">Build Version:</label>
+                <input type="text" class="form-control" id="buildVersion" name="buildVersion" required>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-submit w-100">Create Build</button>
+
+        </form>
+
+        <!-- Back Link -->
+        <div class="mt-3">
+            <a href="/viewBuilds" class="back-link">&larr; Back to Builds List</a>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap JS (for interactivity) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

@@ -37,7 +37,7 @@ public class ManageUserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
         this.restTemplate = new RestTemplate();
         initializeUserList();
-        ManageRoleService roleService = new ManageRoleService(restTemplate);
+        ManageRoleService roleService = new ManageRoleService(restTemplate, null);
 
     }
 
@@ -217,8 +217,8 @@ public class ManageUserService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
 
-        ManageRoleService roleService = new ManageRoleService(restTemplate);
-        List<GrantedAuthority> authorities = getAuthorities(roleService.apiFindByIdString(manageUser.getRoleID()));
+        ManageRoleService roleService = new ManageRoleService(restTemplate, null);
+        List<GrantedAuthority> authorities = getAuthorities(roleService.viewRoleById(String.valueOf(manageUser.getRoleID())).getRoleName()); //roleService.apiFindByIdList(manageUser.getRoleID()).getRoleName());
 
         // Log user details and authorities
         // System.out.println("User Details: ");

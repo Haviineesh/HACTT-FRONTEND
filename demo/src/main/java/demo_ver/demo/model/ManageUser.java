@@ -72,15 +72,15 @@ public class ManageUser {
     }
 
     @Autowired
-    private ManageRoleService manageRoleService = new ManageRoleService(restTemplate);
+    private ManageRoleService manageRoleService = new ManageRoleService(restTemplate, null);
 
     public String getRoleName() {
-        String roleName = manageRoleService.apiFindByIdString(roleID);
+        String roleName = manageRoleService.viewRoleById(String.valueOf(roleID)).getRoleName(); //apiFindById(roleID);
         return (roleName != null) ? roleName : "";
     }
 
     public List<GrantedAuthority> getAuthorities() {
-        return manageRoleService.apiFindByIdList(roleID).getAuthorities();
+        return manageRoleService.viewRoleById(String.valueOf(roleID)).getAuthorities();
     }
 
     public String getResetToken() {

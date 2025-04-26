@@ -2,12 +2,14 @@ package demo_ver.demo.service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -65,48 +67,70 @@ public class ManageRoleService {
         return null;
     }
 
-    public boolean createRole(String roleName, String description, String isActive) {
+    public String createRole(String roleName, String description, String isActive) {
         String url = API_BASE_URL + "/createRole";
 
-        int newId = generateRoleId();
+        String prefixedRoleName = addRolePrefix(roleName);
 
-        ManageRole role = new ManageRole(newId, roleName, description, isActive);
+        // Check if role with same name already exists
+        if (isRoleNameExists(prefixedRoleName)) {
+            return "Role with roleName " + prefixedRoleName + " already exists.";
+        }
+
+        int newId = generateRoleId();
+        ManageRole role = new ManageRole(newId, prefixedRoleName, description, isActive);
 
         try {
             ResponseEntity<String> response = restTemplate.postForEntity(url, role, String.class);
-            return response.getStatusCode().is2xxSuccessful();
+            if (response.getStatusCode().is2xxSuccessful()) {
+                return "Role created successfully.";
+            } else {
+                return "Failed to create role.";
+            }
         } catch (RestClientException e) {
             logger.error("Error creating role: ", e);
-            return false;
+            return "Failed to create role: " + e.getMessage();
         }
     }
 
-    public boolean updateRole(ManageRole role) {
+    public ResponseEntity<String> updateRole(ManageRole updatedRole) {
         String url = API_BASE_URL + "/updateRole";
+
+        String prefixedRoleName = addRolePrefix(updatedRole.getRoleName());
+
+        if (isOtherRoleNameExists(prefixedRoleName, updatedRole.getRoleID())) {
+            return new ResponseEntity<>("Role with roleName " + prefixedRoleName + " already exists.",
+                    HttpStatus.CONFLICT);
+        }
+
+        updatedRole.setRoleName(prefixedRoleName);
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(
                     url,
                     HttpMethod.PUT,
-                    new HttpEntity<>(role),
-                    String.class
-            );
-            return response.getStatusCode().is2xxSuccessful();
+                    new HttpEntity<>(updatedRole),
+                    String.class);
+            return response;
         } catch (RestClientException e) {
             logger.error("Error updating role: ", e);
-            return false;
+            return new ResponseEntity<>("Failed to update role: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    public boolean deleteRole(String id) {
+    public String deleteRole(String id) {
         String url = API_BASE_URL + "/deleteRole/" + id;
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, null, String.class);
-            return response.getStatusCode().is2xxSuccessful();
+            if (response.getStatusCode().is2xxSuccessful()) {
+                return "Role deleted successfully.";
+            } else {
+                return "Failed to delete role.";
+            }
         } catch (RestClientException e) {
             logger.error("Error deleting role: ", e);
-            return false;
+            return "Failed to delete role: " + e.getMessage();
         }
     }
 
@@ -115,11 +139,24 @@ public class ManageRoleService {
         return existingRoles.stream()
                 .mapToInt(ManageRole::getRoleID)
                 .max()
-                .orElse(1000) + 1;
+                .orElse(999) + 1;
     }
 
     public boolean isRoleNameExists(String roleName) {
         return getAllRoles().stream()
                 .anyMatch(role -> role.getRoleName().equalsIgnoreCase(roleName));
+    }
+
+    private boolean isOtherRoleNameExists(String roleName, int currentRoleId) {
+        return getAllRoles().stream()
+                .anyMatch(role -> !Objects.equals(role.getRoleID(), currentRoleId)
+                        && role.getRoleName().equalsIgnoreCase(roleName));
+    }
+
+    private String addRolePrefix(String roleName) {
+        if (!roleName.startsWith("ROLE_")) {
+            return "ROLE_" + roleName;
+        }
+        return roleName;
     }
 }

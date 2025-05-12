@@ -1,13 +1,10 @@
 package demo_ver.demo.service;
 
 import java.net.http.HttpClient;
-import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,20 +13,15 @@ import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import demo_ver.demo.mail.MailService;
 import demo_ver.demo.model.ManageUser;
@@ -49,6 +41,9 @@ public class ViewCaseService {
 
     @Autowired
     private MailService mailService;
+
+    @Autowired
+    private ManageUserService manageUserService;
 
     private static RestTemplate restTemplate = new RestTemplate();
 
@@ -120,7 +115,7 @@ public class ViewCaseService {
     private void sendAssignmentNotification(TestCase testCase) {
         List<Integer> assignedUserIDs = testCase.getUserID();
         for (Integer userID : assignedUserIDs) {
-            ManageUser user = ManageUserService.getUserById(userID);
+            ManageUser user = manageUserService.getUserById(userID); 
             if (user != null && user.getEmail() != null) {
                 String userEmail = user.getEmail();
                 String subject = "New Test Case Assignment";
@@ -147,7 +142,7 @@ public class ViewCaseService {
     private void sendDeadlineNotification(TestCase testCase) {
         List<Integer> assignedUserIDs = testCase.getUserID();
         for (Integer userID : assignedUserIDs) {
-            ManageUser user = ManageUserService.getUserById(userID);
+            ManageUser user = manageUserService.getUserById(userID);
             if (user != null && user.getEmail() != null) {
                 String userEmail = user.getEmail();
                 String subject = "Test Case Deadline Notification";
@@ -361,7 +356,7 @@ public class ViewCaseService {
         List<TestCase> userTestCases = new ArrayList<>();
 
         for (TestCase testCase : testList) {
-            if (testCase.getUsernames().contains(username)) {
+            if (testCase.getUsernames(manageUserService).contains(username)) {
                 userTestCases.add(testCase);
             }
         }

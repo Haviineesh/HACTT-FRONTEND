@@ -180,14 +180,15 @@ public class TestCase {
     }
 
     // Method to get usernames of assigned users
-    public List<String> getUsernames() {
+    public List<String> getUsernames(ManageUserService manageUserService) {
         return userID.stream()
                 .map(userId -> {
-                    ManageUser user = ManageUserService.getUserById(userId);
+                    ManageUser user = manageUserService.getUserById(userId);
                     return (user != null) ? user.getUsername() : "";
                 })
                 .collect(Collectors.toList());
     }
+    
 
     public List<String> getTcSteps() {
         return tcSteps;

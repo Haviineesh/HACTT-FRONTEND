@@ -41,6 +41,14 @@ public class ManageUserService implements UserDetailsService {
     private final MailService mailService;
 
     @Autowired
+    public ManageUserService(PasswordEncoder passwordEncoder, RestTemplate restTemplate) {
+        this.passwordEncoder = passwordEncoder;
+        this.restTemplate = restTemplate;
+        this.userAdapter = new UserAdapter();
+        this.mailService = new MailService();
+    }
+    
+    @Autowired
     public ManageUserService(RestTemplate restTemplate, PasswordEncoder passwordEncoder, UserAdapter userAdapter, MailService mailService) {
         this.restTemplate = restTemplate;
         this.passwordEncoder = passwordEncoder;

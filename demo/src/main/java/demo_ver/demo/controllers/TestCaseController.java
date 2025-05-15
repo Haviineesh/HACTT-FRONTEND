@@ -1,7 +1,6 @@
 package demo_ver.demo.controllers;
 
 import java.security.Principal; // Import Principal for getting logged-in user's information
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -30,8 +29,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 // import demo_ver.demo.TestCaseRepository;
 import demo_ver.demo.model.ManageUser;
 import demo_ver.demo.model.TestCase;
-import demo_ver.demo.model.TestPlan;
-import demo_ver.demo.service.ManageRoleService;
 import demo_ver.demo.service.ManageUserService;
 import demo_ver.demo.service.ViewCaseService;
 
@@ -44,6 +41,9 @@ public class TestCaseController {
     private ViewCaseService viewCaseService;
 
     @Autowired
+    private ManageUserService manageUserService;
+
+    @Autowired
     private RestTemplate restTemplate;
 
     @GetMapping("/view")
@@ -52,7 +52,7 @@ public class TestCaseController {
         List<TestCase> testCases = ViewCaseService.findAllList();
 
         // Assuming ManageUserService.getAllUsers() returns a List<ManageUser>
-        List<ManageUser> allUsers = ManageUserService.getAllUsers();
+        List<ManageUser> allUsers = manageUserService.getAllUsers();
         String username = principal.getName();
 
         // Set username for each test case
@@ -61,7 +61,7 @@ public class TestCaseController {
 
             List<String> usernames = userIds.stream()
                     .map(userId -> {
-                        ManageUser user = ManageUserService.getUserById(userId);
+                        ManageUser user = manageUserService.getUserById(userId);
                         return (user != null) ? user.getUsername() : "";
                     })
                     .collect(Collectors.toList());
@@ -93,7 +93,7 @@ public class TestCaseController {
         String username = authentication.getName();
         model.addAttribute("username", username);
         model.addAttribute("testCase", new TestCase());
-        model.addAttribute("users", ManageUserService.getAllUsers());
+        model.addAttribute("users", manageUserService.getAllUsers());
         return "addTestCase";
     }
 
@@ -103,7 +103,7 @@ public class TestCaseController {
             @AuthenticationPrincipal UserDetails userDetails, Model model)
             throws JsonProcessingException {
         model.addAttribute("tests", ViewCaseService.findAllList());
-        model.addAttribute("users", ManageUserService.getAllUsers()); // I added this so that user list will always show
+        model.addAttribute("users", manageUserService.getAllUsers()); // I added this so that user list will always show
                                                                       // even if got validation errors
 
         // Check if the test case name already exists
@@ -147,7 +147,7 @@ public class TestCaseController {
     public String editCase(@PathVariable("idtest_cases") Long idtest_cases, Model model) {
         TestCase testCaseToEdit = viewCaseService.getTestCaseById(idtest_cases);
         model.addAttribute("testCase", testCaseToEdit);
-        model.addAttribute("users", ManageUserService.getAllUsers());
+        model.addAttribute("users", manageUserService.getAllUsers());
         List<Map<String, String>> testCaseSteps = new ArrayList<>();
         for (int i = 0; i < testCaseToEdit.getTcSteps().size(); i++) {
             Map<String, String> step = new HashMap<>();
@@ -167,7 +167,7 @@ public class TestCaseController {
             throws JsonProcessingException {
 
         model.addAttribute("tests", ViewCaseService.findAllList());
-        model.addAttribute("users", ManageUserService.getAllUsers()); // I added this so that user list will always show
+        model.addAttribute("users", manageUserService.getAllUsers()); // I added this so that user list will always show
                                                                       // even if got validation errors
         String username = principal.getName(); // gets name of tester
         // if (viewCaseService.istestCaseExists(testCase.getTestCaseName())) {

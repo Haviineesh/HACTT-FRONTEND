@@ -139,7 +139,7 @@ public class ManageRoleService {
         return existingRoles.stream()
                 .mapToInt(ManageRole::getRoleID)
                 .max()
-                .orElse(999) + 1;
+                .orElse(1000) + 1;
     }
 
     public boolean isRoleNameExists(String roleName) {

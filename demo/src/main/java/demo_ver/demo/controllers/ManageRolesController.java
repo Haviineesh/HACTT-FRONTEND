@@ -83,9 +83,6 @@ public class ManageRolesController {
 
     @PostMapping("/editrole")
     public String updateManageRole(ManageRole manageRole, Model model) {
-        if (manageRole.getIsActive() == null) {
-            manageRole.setIsActive("false");
-        }
         ResponseEntity<String> response = manageRoleService.updateRole(manageRole);
 
         if (response.getStatusCode().is2xxSuccessful()) {

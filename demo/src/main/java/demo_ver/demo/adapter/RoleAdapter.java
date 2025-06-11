@@ -1,4 +1,5 @@
 package demo_ver.demo.adapter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,15 @@ public class RoleAdapter {
         }
 
         return roles;
+    }
+
+    public ManageRole convertJsonToRole(JsonNode node) {
+        ManageRole role = new ManageRole();
+        role.setRoleID(node.path("roleId").asInt());
+        role.setRoleName(node.path("roleName").asText());
+        role.setDescription(node.path("description").asText());
+        role.setIsActive(node.path("isActive").asText());
+        return role;
     }
 
     public JsonNode convertRoleToJson(ManageRole role) {

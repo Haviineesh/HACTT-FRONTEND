@@ -59,7 +59,16 @@ public class ManageRoleService {
         try {
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
             if (response.getBody() != null) {
-                return new ObjectMapper().readValue(response.getBody(), ManageRole.class);
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode node = mapper.readTree(response.getBody());
+
+                ManageRole role = new ManageRole();
+                role.setRoleID(Integer.parseInt(node.path("roleId").asText())); // Ensures proper int parsing
+                role.setRoleName(node.path("roleName").asText());
+                role.setDescription(node.path("description").asText());
+                role.setIsActive(node.path("isActive").asText());
+
+                return role;
             }
         } catch (Exception e) {
             logger.error("Error fetching role by ID: ", e);

@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import demo_ver.demo.model.ManageUser;
 
@@ -31,5 +33,23 @@ public class UserAdapter {
         }
 
         return users;
+    }
+
+    public JsonNode convertUserToJson(ManageUser user) {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode userJson = mapper.createObjectNode();
+
+        userJson.put("userId", String.valueOf(user.getUserID()));
+        userJson.put("email", user.getEmail());
+        userJson.put("username", user.getUsername());
+        userJson.put("password", user.getPassword());
+        userJson.put("roleId", String.valueOf(user.getRoleID()));
+
+        // Only add resetToken if it's an update (optional in create)
+        if (user.getResetToken() != null) {
+            userJson.put("resetToken", user.getResetToken());
+        }
+
+        return userJson;
     }
 }

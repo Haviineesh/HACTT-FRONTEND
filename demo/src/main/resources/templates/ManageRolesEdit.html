@@ -34,15 +34,22 @@
         <label class="col-3" for="editDescription">Description:</label>
         <textarea type="text" id="editDescription" rows="3" th:field="*{description}"></textarea>
       </p>
-      <div class="form-group d-flex justify-content-start">
-        <div class="d-flex justify-content-between">
-          <button type="submit" class="btn btn-success">Save</button>
-        </div>
-        <div class="ml-3">
-          <button type="button" class="btn btn-danger" onclick="window.location.href='/manageroles'">Cancel</button>
-        </div>
-      </div>
-    </form>
+      <p>
+        <label class="col-3" for="editIsActive">Is Active:</label>
+        <!-- Hidden input ensures a default value is always sent -->
+        <input type="hidden" name="isActive" value="false" />
+        <input type="checkbox" id="editIsActive" name="isActive" th:checked="${role.isActive == 'true'}" value="true" />
+  </div>
+  </p>
+  <div class="form-group d-flex justify-content-start">
+    <div class="d-flex justify-content-between">
+      <button type="submit" class="btn btn-success">Save</button>
+    </div>
+    <div class="ml-3">
+      <button type="button" class="btn btn-danger" onclick="window.location.href='/manageroles'">Cancel</button>
+    </div>
+  </div>
+  </form>
   </div>
 </body>
 

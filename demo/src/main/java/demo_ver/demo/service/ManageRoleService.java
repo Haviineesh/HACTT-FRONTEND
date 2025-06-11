@@ -25,7 +25,7 @@ import demo_ver.demo.model.ManageRole;
 @Service
 public class ManageRoleService {
     private static final Logger logger = LoggerFactory.getLogger(ManageRoleService.class);
-    private static final String API_BASE_URL = "https://84cb-161-139-102-63.ngrok-free.app";
+    private static final String API_BASE_URL = "https://960e-113-211-140-185.ngrok-free.app";
 
     private final RestTemplate restTemplate;
     private final RoleAdapter roleAdapter;
@@ -69,10 +69,8 @@ public class ManageRoleService {
 
     public String createRole(String roleName, String description, String isActive) {
         String url = API_BASE_URL + "/createRole";
-
         String prefixedRoleName = addRolePrefix(roleName);
 
-        // Check if role with same name already exists
         if (isRoleNameExists(prefixedRoleName)) {
             return "Role with roleName " + prefixedRoleName + " already exists.";
         }
@@ -81,12 +79,9 @@ public class ManageRoleService {
         ManageRole role = new ManageRole(newId, prefixedRoleName, description, isActive);
 
         try {
-            ResponseEntity<String> response = restTemplate.postForEntity(url, role, String.class);
-            if (response.getStatusCode().is2xxSuccessful()) {
-                return "Role created successfully.";
-            } else {
-                return "Failed to create role.";
-            }
+            HttpEntity<JsonNode> request = new HttpEntity<>(roleAdapter.convertRoleToJson(role));
+            ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+            return response.getStatusCode().is2xxSuccessful() ? "Role created successfully." : "Failed to create role.";
         } catch (RestClientException e) {
             logger.error("Error creating role: ", e);
             return "Failed to create role: " + e.getMessage();
@@ -95,7 +90,6 @@ public class ManageRoleService {
 
     public ResponseEntity<String> updateRole(ManageRole updatedRole) {
         String url = API_BASE_URL + "/updateRole";
-
         String prefixedRoleName = addRolePrefix(updatedRole.getRoleName());
 
         if (isOtherRoleNameExists(prefixedRoleName, updatedRole.getRoleID())) {
@@ -106,12 +100,8 @@ public class ManageRoleService {
         updatedRole.setRoleName(prefixedRoleName);
 
         try {
-            ResponseEntity<String> response = restTemplate.exchange(
-                    url,
-                    HttpMethod.PUT,
-                    new HttpEntity<>(updatedRole),
-                    String.class);
-            return response;
+            HttpEntity<JsonNode> request = new HttpEntity<>(roleAdapter.convertRoleToJson(updatedRole));
+            return restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
         } catch (RestClientException e) {
             logger.error("Error updating role: ", e);
             return new ResponseEntity<>("Failed to update role: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

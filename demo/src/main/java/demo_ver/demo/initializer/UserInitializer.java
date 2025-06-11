@@ -42,9 +42,9 @@ public class UserInitializer implements CommandLineRunner {
             newUser.setUsername(username);
             newUser.setPassword(password); // It will be encoded inside addUser
             manageUserService.addUser(newUser, roleID);
-            System.out.println("✅ User " + username + " added.");
+            System.out.println("User " + username + " added.");
         } else {
-            System.out.println("⚠️ User " + username + " already exists.");
+            System.out.println("User " + username + " already exists.");
         }
     }
 }

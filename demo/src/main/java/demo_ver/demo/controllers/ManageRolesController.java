@@ -41,7 +41,7 @@ public class ManageRolesController {
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_Admin"));
 
         boolean isProjectManager = authorities.stream()
-            .anyMatch(authority -> authority.getAuthority().equals("ROLE_Project_Manager"));
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_Project_Manager"));
 
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("isProjectManager", isProjectManager);
@@ -63,7 +63,8 @@ public class ManageRolesController {
             return "ManageRolesNew";
         }
 
-        manageRoleService.createRole(manageRole.getRoleName(), manageRole.getDescription(), manageRole.getIsActive());// save product into database,
+        manageRoleService.createRole(manageRole.getRoleName(), manageRole.getDescription(), "true");// save product into
+                                                                                                    // database,
         // model.addAttribute("manageRole", manageRole);
         return "redirect:/manageroles";
     }
@@ -82,6 +83,9 @@ public class ManageRolesController {
 
     @PostMapping("/editrole")
     public String updateManageRole(ManageRole manageRole, Model model) {
+        if (manageRole.getIsActive() == null) {
+            manageRole.setIsActive("false");
+        }
         ResponseEntity<String> response = manageRoleService.updateRole(manageRole);
 
         if (response.getStatusCode().is2xxSuccessful()) {

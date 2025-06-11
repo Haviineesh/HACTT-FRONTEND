@@ -33,7 +33,8 @@ import demo_ver.demo.model.ManageUser;
 public class ManageUserService implements UserDetailsService {
 
     private static final Logger logger = LoggerFactory.getLogger(ManageUserService.class);
-    private static final String API_BASE_URL = "https://84cb-161-139-102-63.ngrok-free.app"; // Replace with your ngrok or actual API URL
+    private static final String API_BASE_URL = "https://960e-113-211-140-185.ngrok-free.app"; // Replace with your ngrok
+                                                                                              // or actual API URL
 
     private final PasswordEncoder passwordEncoder;
     private final RestTemplate restTemplate;
@@ -47,9 +48,10 @@ public class ManageUserService implements UserDetailsService {
         this.userAdapter = new UserAdapter();
         this.mailService = new MailService();
     }
-    
+
     @Autowired
-    public ManageUserService(RestTemplate restTemplate, PasswordEncoder passwordEncoder, UserAdapter userAdapter, MailService mailService) {
+    public ManageUserService(RestTemplate restTemplate, PasswordEncoder passwordEncoder, UserAdapter userAdapter,
+            MailService mailService) {
         this.restTemplate = restTemplate;
         this.passwordEncoder = passwordEncoder;
         this.userAdapter = userAdapter;
@@ -79,7 +81,9 @@ public class ManageUserService implements UserDetailsService {
 
             String url = API_BASE_URL + "/createUser";
             try {
-                restTemplate.postForEntity(url, newUser, String.class);
+                JsonNode userJson = userAdapter.convertUserToJson(newUser);
+                HttpEntity<JsonNode> request = new HttpEntity<>(userJson);
+                restTemplate.postForEntity(url, request, String.class);
                 sendNewUserNotification(newUser, plainTextPassword);
             } catch (RestClientException e) {
                 logger.error("Error adding user: ", e);
@@ -100,9 +104,8 @@ public class ManageUserService implements UserDetailsService {
     }
 
     private boolean isUserUnique(ManageUser newUser) {
-        return getAllUsers().stream().noneMatch(user ->
-                user.getUsername().equalsIgnoreCase(newUser.getUsername()) ||
-                        user.getEmail().equalsIgnoreCase(newUser.getEmail()));
+        return getAllUsers().stream().noneMatch(user -> user.getUsername().equalsIgnoreCase(newUser.getUsername()) ||
+                user.getEmail().equalsIgnoreCase(newUser.getEmail()));
     }
 
     public void deleteUser(int userID) {
@@ -156,7 +159,9 @@ public class ManageUserService implements UserDetailsService {
         updatedUser.setRoleID(roleID);
         String url = API_BASE_URL + "/updateUser";
         try {
-            restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(updatedUser), String.class);
+            JsonNode userJson = userAdapter.convertUserToJson(updatedUser);
+            HttpEntity<JsonNode> request = new HttpEntity<>(userJson);
+            restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
         } catch (Exception e) {
             logger.error("Error updating user: ", e);
         }
@@ -177,13 +182,13 @@ public class ManageUserService implements UserDetailsService {
         }
 
         ManageRoleService roleService = new ManageRoleService(restTemplate, null);
-        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(roleService.viewRoleById(String.valueOf(manageUser.getRoleID())).getRoleName()));
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(
+                roleService.viewRoleById(String.valueOf(manageUser.getRoleID())).getRoleName()));
 
         return new User(
                 manageUser.getUsername(),
                 manageUser.getPassword(),
-                authorities
-        );
+                authorities);
     }
 
     public boolean passwordMatches(String rawPassword, String encodedPassword) {

@@ -26,7 +26,7 @@ public class RoleInitializer implements CommandLineRunner {
     private void createRoleIfNotExists(String roleName, String description) {
         // Prefix "ROLE_" will be added inside the service method
         if (!manageRoleService.isRoleNameExists("ROLE_" + roleName)) {
-            String response = manageRoleService.createRole(roleName, description, "Y");
+            String response = manageRoleService.createRole(roleName, description, "true");
             System.out.println("Created role " + roleName + ": " + response);
         } else {
             System.out.println("Role " + roleName + " already exists.");

@@ -23,7 +23,7 @@ public class ManageRole {
     private String roleName;
 
     @JsonProperty("isActive")
-    private String isActive; 
+    private String isActive;
 
     public ManageRole() {
 
@@ -71,9 +71,9 @@ public class ManageRole {
     }
 
     public void setIsActive(String isActive) {
-        this.isActive = isActive;
+        this.isActive = (isActive != null && isActive.equalsIgnoreCase("true")) ? "true" : "false";
     }
-    
+
     // For role based authorization
     public List<GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();

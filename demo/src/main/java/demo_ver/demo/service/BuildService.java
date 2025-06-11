@@ -1,16 +1,19 @@
 package demo_ver.demo.service;
 
-import demo_ver.demo.model.Build;
-import demo_ver.demo.model.TestPlan;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -23,22 +26,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
+import demo_ver.demo.model.Build;
 
 @Service
 public class BuildService {
 
     private static final Logger logger = LoggerFactory.getLogger(BuildService.class);
-    private static final String HYPERLEDGER_BASE_URL = "https://8ece-14-192-212-187.ngrok-free.app";
+    private static final String HYPERLEDGER_BASE_URL = "https://960e-113-211-140-185.ngrok-free.app";
 
     @Autowired
     private RestTemplate restTemplate = new RestTemplate();

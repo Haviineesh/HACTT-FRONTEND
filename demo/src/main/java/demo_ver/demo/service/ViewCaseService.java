@@ -55,7 +55,7 @@ public class ViewCaseService {
 
     // private static final String HYPERLEDGER_BASE_URL =
     // "http://172.20.228.232:3000"; // Use ngrok link here instead
-    private static final String HYPERLEDGER_BASE_URL = "https://960e-113-211-140-185.ngrok-free.app"; // Use ngrok link
+    private static final String HYPERLEDGER_BASE_URL = "https://4739-113-211-99-164.ngrok-free.app"; // Use ngrok link
                                                                                                      // here insteada
 
     // private static final String HYPERLEDGER_BASE_URL =

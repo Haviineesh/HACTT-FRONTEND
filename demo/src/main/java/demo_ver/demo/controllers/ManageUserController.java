@@ -116,6 +116,12 @@ public class ManageUserController {
             return "ManageUserEdit";
         }
 
+        ManageUser originalUser = manageUserService.getUserById(manageUser.getUserID());
+        if (originalUser != null) {
+            manageUser.setPassword(originalUser.getPassword());
+            manageUser.setResetToken(originalUser.getResetToken());
+        }
+
         manageUserService.updateUser(manageUser, roleID);
         return "redirect:/manageuser";
     }

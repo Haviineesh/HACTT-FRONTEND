@@ -33,8 +33,8 @@ import demo_ver.demo.model.ManageUser;
 public class ManageUserService implements UserDetailsService {
 
     private static final Logger logger = LoggerFactory.getLogger(ManageUserService.class);
-    private static final String API_BASE_URL = "https://960e-113-211-140-185.ngrok-free.app"; // Replace with your ngrok
-                                                                                              // or actual API URL
+    private static final String API_BASE_URL = "https://4739-113-211-99-164.ngrok-free.app"; // Replace with your ngrok
+                                                                                             // or actual API URL
 
     private final PasswordEncoder passwordEncoder;
     private final RestTemplate restTemplate;
@@ -135,9 +135,20 @@ public class ManageUserService implements UserDetailsService {
     public ManageUser getUserById(int userID) {
         String url = API_BASE_URL + "/getUser/" + userID;
         try {
-            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-            if (response.getStatusCode().is2xxSuccessful()) {
-                return new ObjectMapper().readValue(response.getBody(), ManageUser.class);
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
+            if (response.getBody() != null) {
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode node = mapper.readTree(response.getBody());
+
+                ManageUser user = new ManageUser();
+                user.setUserID(Integer.parseInt(node.path("userId").asText()));
+                user.setEmail(node.path("email").asText());
+                user.setUsername(node.path("username").asText());
+                user.setPassword(node.path("password").asText());
+                user.setRoleID(Integer.parseInt(node.path("roleId").asText()));
+                user.setResetToken(node.path("resetToken").asText());
+
+                return user;
             }
         } catch (Exception e) {
             logger.error("Error retrieving user by ID: ", e);

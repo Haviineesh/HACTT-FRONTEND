@@ -39,6 +39,7 @@ public class ManageUserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final RestTemplate restTemplate;
     private final UserAdapter userAdapter;
+    @Autowired
     private final MailService mailService;
 
     @Autowired

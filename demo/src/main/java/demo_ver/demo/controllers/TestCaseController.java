@@ -49,36 +49,31 @@ public class TestCaseController {
     @GetMapping("/view")
     public String viewCase(Model model, Principal principal, @AuthenticationPrincipal UserDetails userDetails)
             throws JsonProcessingException {
-        List<TestCase> testCases = viewCaseService.findAllList();
 
-        // Assuming ManageUserService.getAllUsers() returns a List<ManageUser>
         List<ManageUser> allUsers = manageUserService.getAllUsers();
-        String username = principal.getName();
+        String currentUsername = principal.getName();
 
-        // Set username for each test case
-        for (TestCase testCase : testCases) {
-            List<Integer> userIds = testCase.getUserID();
+        // Build a map for quick ID -> username lookup
+        Map<Integer, String> userIdToUsernameMap = allUsers.stream()
+                .collect(Collectors.toMap(ManageUser::getUserID, ManageUser::getUsername));
 
-            List<String> usernames = userIds.stream()
-                    .map(userId -> {
-                        ManageUser user = manageUserService.getUserById(userId);
-                        return (user != null) ? user.getUsername() : "";
-                    })
+        // Get only the test cases assigned to this user
+        List<TestCase> userTestCases = viewCaseService.findTestCasesByUsername(currentUsername);
+
+        // Update usernames for each test case
+        for (TestCase testCase : userTestCases) {
+            List<String> usernames = testCase.getUserID().stream()
+                    .map(id -> userIdToUsernameMap.getOrDefault(id, "Unknown"))
                     .collect(Collectors.toList());
 
-            // Assuming you want to concatenate usernames into a single string
             testCase.setUsername(String.join(", ", usernames));
-
         }
 
-        List<TestCase> userTestCases = viewCaseService.findTestCasesByUsername(username);
-
+        // Add to model
         model.addAttribute("testCase", userTestCases);
         model.addAttribute("users1", allUsers);
-        // model.addAttribute("allTestCases", ViewCaseService.findAllList());
-        // model.addAttribute("userTestCases",
-        // viewCaseService.findTestCasesByUsername(username));
-        // remove edit and delete if not tester
+
+        // Check if current user is a tester
         Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
         boolean isTester = authorities.stream()
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_Tester"));
@@ -86,6 +81,50 @@ public class TestCaseController {
 
         return "viewTestCase";
     }
+
+    // @GetMapping("/view")
+    // public String viewCase(Model model, Principal principal,
+    // @AuthenticationPrincipal UserDetails userDetails)
+    // throws JsonProcessingException {
+    // List<TestCase> testCases = viewCaseService.findAllList();
+
+    // // Assuming ManageUserService.getAllUsers() returns a List<ManageUser>
+    // List<ManageUser> allUsers = manageUserService.getAllUsers();
+    // String username = principal.getName();
+
+    // // Set username for each test case
+    // for (TestCase testCase : testCases) {
+    // List<Integer> userIds = testCase.getUserID();
+
+    // List<String> usernames = userIds.stream()
+    // .map(userId -> {
+    // ManageUser user = manageUserService.getUserById(userId);
+    // return (user != null) ? user.getUsername() : "";
+    // })
+    // .collect(Collectors.toList());
+
+    // // Assuming you want to concatenate usernames into a single string
+    // testCase.setUsername(String.join(", ", usernames));
+
+    // }
+
+    // List<TestCase> userTestCases =
+    // viewCaseService.findTestCasesByUsername(username);
+
+    // model.addAttribute("testCase", userTestCases);
+    // model.addAttribute("users1", allUsers);
+    // // model.addAttribute("allTestCases", ViewCaseService.findAllList());
+    // // model.addAttribute("userTestCases",
+    // // viewCaseService.findTestCasesByUsername(username));
+    // // remove edit and delete if not tester
+    // Collection<? extends GrantedAuthority> authorities =
+    // userDetails.getAuthorities();
+    // boolean isTester = authorities.stream()
+    // .anyMatch(authority -> authority.getAuthority().equals("ROLE_Tester"));
+    // model.addAttribute("isTester", isTester);
+
+    // return "viewTestCase";
+    // }
 
     @GetMapping("/add")
     public String showAddTestCaseForm(Model model, Authentication authentication,

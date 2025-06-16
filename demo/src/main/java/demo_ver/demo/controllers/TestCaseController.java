@@ -49,7 +49,7 @@ public class TestCaseController {
     @GetMapping("/view")
     public String viewCase(Model model, Principal principal, @AuthenticationPrincipal UserDetails userDetails)
             throws JsonProcessingException {
-        List<TestCase> testCases = ViewCaseService.findAllList();
+        List<TestCase> testCases = viewCaseService.findAllList();
 
         // Assuming ManageUserService.getAllUsers() returns a List<ManageUser>
         List<ManageUser> allUsers = manageUserService.getAllUsers();
@@ -102,7 +102,7 @@ public class TestCaseController {
             @RequestParam List<String> tcSteps, @RequestParam List<String> expectedResults,
             @AuthenticationPrincipal UserDetails userDetails, Model model)
             throws JsonProcessingException {
-        model.addAttribute("tests", ViewCaseService.findAllList());
+        model.addAttribute("tests", viewCaseService.findAllList());
         model.addAttribute("users", manageUserService.getAllUsers()); // I added this so that user list will always show
                                                                       // even if got validation errors
 
@@ -166,7 +166,7 @@ public class TestCaseController {
             Principal principal)
             throws JsonProcessingException {
 
-        model.addAttribute("tests", ViewCaseService.findAllList());
+        model.addAttribute("tests", viewCaseService.findAllList());
         model.addAttribute("users", manageUserService.getAllUsers()); // I added this so that user list will always show
                                                                       // even if got validation errors
         String username = principal.getName(); // gets name of tester

@@ -18,17 +18,14 @@ public class UserInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
         // Add default users
-        addUserIfNotExists("Teenesh", 1000); // Admin
-        addUserIfNotExists("John", 1002);    // Project Manager
-        addUserIfNotExists("Will", 1001);    // Tester
-        addUserIfNotExists("Kasyfi", 1001);  // Tester
-        addUserIfNotExists("Mahathir", 1003); // Developer
-        addUserIfNotExists("tester", 1001);  // Tester
-        addUserIfNotExists("manager", 1002); // Project Manager
+        addUserIfNotExists("Teenesh", "teenesh@graduate.utm.my", 1000);   // Admin
+        addUserIfNotExists("Manager", "haviineesh@graduate.utm.my", 1002);         // Project Manager
+        addUserIfNotExists("Tester", "haviineesh@gmail.com", 1001);         // Tester
+        addUserIfNotExists("Developer", "hyperagilectt@gmail.com", 1003); // Developer
+        addUserIfNotExists("tester2", "tester@graduate.utm.my", 1001);     // Tester
     }
 
-    private void addUserIfNotExists(String username, int roleID) {
-        String email = "haviineesh@graduate.utm.my";
+    private void addUserIfNotExists(String username, String email, int roleID) {
         String password = "123456";
 
         boolean exists = manageUserService

@@ -25,7 +25,7 @@ import demo_ver.demo.model.ManageRole;
 @Service
 public class ManageRoleService {
     private static final Logger logger = LoggerFactory.getLogger(ManageRoleService.class);
-    private static final String API_BASE_URL = "https://4739-113-211-99-164.ngrok-free.app";
+    private static final String API_BASE_URL = "https://0a00-113-211-124-209.ngrok-free.app";
 
     private final RestTemplate restTemplate;
     private final RoleAdapter roleAdapter;

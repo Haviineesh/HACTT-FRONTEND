@@ -1,11 +1,10 @@
 package demo_ver.demo.service;
 
-import java.net.http.HttpClient;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -17,93 +16,78 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import demo_ver.demo.adapter.TestCaseAdapter;
 import demo_ver.demo.mail.MailService;
 import demo_ver.demo.model.ManageUser;
 import demo_ver.demo.model.TestCase;
 import demo_ver.demo.utils.RandomNumber;
 
-// service class for viewing test cases
 @Service
 public class ViewCaseService {
     private static final Logger logger = LoggerFactory.getLogger(ViewCaseService.class);
+    private static final String API_BASE_URL = "https://0a00-113-211-124-209.ngrok-free.app";
 
-    // use this list to store test cases locally, switch to mysql or any database
-    private static List<TestCase> testList = new ArrayList<TestCase>() {
-        {
-        }
-    };
-
-    @Autowired
-    private MailService mailService;
+    private final RestTemplate restTemplate;
+    private final TestCaseAdapter testCaseAdapter;
+    private final MailService mailService;
+    private final ManageUserService manageUserService;
 
     @Autowired
-    private ManageUserService manageUserService;
-
-    private static RestTemplate restTemplate = new RestTemplate();
-
-    public ViewCaseService(RestTemplate restTemplate) {
+    public ViewCaseService(RestTemplate restTemplate, TestCaseAdapter testCaseAdapter,
+            MailService mailService, ManageUserService manageUserService) {
         this.restTemplate = restTemplate;
+        this.testCaseAdapter = testCaseAdapter;
+        this.mailService = mailService;
+        this.manageUserService = manageUserService;
     }
 
-    private static final HttpClient httpClient = HttpClient.newHttpClient();
-
-    // private static final String HYPERLEDGER_BASE_URL =
-    // "http://172.20.228.232:3000"; // Use ngrok link here instead
-    private static final String HYPERLEDGER_BASE_URL = "https://4739-113-211-99-164.ngrok-free.app"; // Use ngrok link
-                                                                                                     // here insteada
-
-    // private static final String HYPERLEDGER_BASE_URL =
-    // "http://localhost:8090/api";
-
-    // Get all test cases from hyperledger API
-    public static List<TestCase> findAllList() throws JsonProcessingException {
-
-        return testList;
+    public List<TestCase> findAllList() {
+        try {
+            String url = API_BASE_URL + "/getAllTestCases";
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
+            JsonNode root = new ObjectMapper().readTree(response.getBody()).get("message");
+            return testCaseAdapter.convertJsonToTestCases(root);
+        } catch (Exception e) {
+            logger.error("Error fetching test cases: ", e);
+            return Collections.emptyList();
+        }
     }
 
-    // Add a new test case and send a POST request to the Hyperledger Fabric API
+    public TestCase getTestCaseById(Long idtest_cases) {
+        try {
+            String url = API_BASE_URL + "/getTestCase/" + idtest_cases;
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
+            JsonNode root = new ObjectMapper().readTree(response.getBody()).get("message");
+            return testCaseAdapter.convertJsonToTestCase(root);
+        } catch (Exception e) {
+            logger.error("Error fetching test case by ID: ", e);
+            return null;
+        }
+    }
+
     public TestCase addTestCaseForm(TestCase testCase, List<Integer> userID, String testerUsername,
             List<Map<String, String>> testCaseSteps) {
-        testCase.setIdtest_cases(RandomNumber.getRandom(1, 1000)); // TODO - generate a unique ID that wont be repeated
+        testCase.setIdtest_cases(RandomNumber.getRandom(1, 1000));
         testCase.setUserID(userID);
         testCase.setOverallStatus("Pending");
-        testList.add(testCase);
-        // incorrect method
-        setUserStatusForTestCase(testCase.getIdtest_cases(), testerUsername, "Approved"); // IMPORTANT
+        testCase.setUserStatus(testerUsername, "Pending");
 
-        // Prepare the request body (assuming field names match API)
+        Map<String, Object> body = testCaseAdapter.convertTestCaseToJsonStringifiedFormat(testCase);
+
         try {
-            Map<String, Object> requestBody = new HashMap<>();
-            String idtestCasesString = testCase.getIdtest_cases().toString();
-            requestBody.put("id", idtestCasesString);
-            requestBody.put("pid", testCase.getProjectId());
-            requestBody.put("tcn", testCase.getTestCaseName());
-            requestBody.put("tcdesc", testCase.getTest_desc());
-            requestBody.put("dtc", testCase.getDateCreated());
-            requestBody.put("dl", testCase.getDeadline());
-            // int firstUserID = userID.stream().findFirst().orElse(0);
-            // // convert userID to String
-            // String userIDString = Integer.toString(firstUserID);
-            // requestBody.put("uid", userIDString);
-            requestBody.put("ostts", testCase.getOverallStatus());
-            requestBody.put("usrn", testerUsername);
-            requestBody.put("tcSteps", testCaseSteps);
-            // requestBody.put("crtdby", testCase.getCreatedBy());
-            // requestBody.put("stts", testCase.getStatus());
-
-            // Send POST request using RestTemplate
-            String url = HYPERLEDGER_BASE_URL + "/createTestCase"; // Replace with your API URL
-            String response = restTemplate.postForObject(url, requestBody, String.class);
+            String url = API_BASE_URL + "/createTestCase";
+            restTemplate.postForObject(url, body, String.class);
         } catch (RestClientResponseException e) {
-            // Handle potential errors from the API call
-            logger.error("Error creating test case:", e);
-            // You can potentially handle specific error codes or exceptions here
+            logger.error("Error creating test case: ", e);
         }
 
         sendAssignmentNotification(testCase);
@@ -111,74 +95,23 @@ public class ViewCaseService {
         return testCase;
     }
 
-    // send email notification to assigned users
-    private void sendAssignmentNotification(TestCase testCase) {
-        List<Integer> assignedUserIDs = testCase.getUserID();
-        for (Integer userID : assignedUserIDs) {
-            ManageUser user = manageUserService.getUserById(userID); 
-            if (user != null && user.getEmail() != null) {
-                String userEmail = user.getEmail();
-                String subject = "New Test Case Assignment";
-                String message = "Dear user, you have been assigned a new test case. Details:\n" +
-                        "Test Case ID: " + testCase.getIdtest_cases() + "\n" +
-                        "Test Case Name: " + testCase.getTestCaseName() + "\n" +
-                        "Deadline: " + testCase.getDeadline() + "\n" +
-                        "Please review and approve the test case before the deadline.";
-                mailService.sendAssignedMail(userEmail, subject, message);
-            }
-        }
-    }
-
-    private void scheduleDeadlineNotification(TestCase testCase) {
-        LocalDateTime deadlineDateTime = LocalDate.parse(testCase.getDeadline()).atStartOfDay();
-        long initialDelay = ChronoUnit.SECONDS.between(LocalDateTime.now(), deadlineDateTime);
-
-        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
-        executorService.scheduleWithFixedDelay(() -> sendDeadlineNotification(testCase), initialDelay, 24 * 60 * 60,
-                TimeUnit.SECONDS);
-        executorService.schedule(() -> executorService.shutdown(), initialDelay + 24 * 60 * 60, TimeUnit.SECONDS);
-    }
-
-    private void sendDeadlineNotification(TestCase testCase) {
-        List<Integer> assignedUserIDs = testCase.getUserID();
-        for (Integer userID : assignedUserIDs) {
-            ManageUser user = manageUserService.getUserById(userID);
-            if (user != null && user.getEmail() != null) {
-                String userEmail = user.getEmail();
-                String subject = "Test Case Deadline Notification";
-                String message = "Dear user, the deadline for the assigned test case has been reached. Details:\n" +
-                        "Test Case ID: " + testCase.getIdtest_cases() + "\n" +
-                        "Test Case Name: " + testCase.getTestCaseName() + "\n" +
-                        "Deadline: " + testCase.getDeadline() + "\n" +
-                        "Please ensure that the test case is completed.";
-                mailService.sendAssignedMail(userEmail, subject, message);
-            }
-        }
-    }
-
-    // Update the status of a test case for a specific user
     public void setUserStatusForTestCase(Long testCaseId, String username, String status) {
-        Optional<TestCase> testCaseOptional = findById(testCaseId);
-        if (testCaseOptional.isPresent()) {
-            TestCase testCase = testCaseOptional.get();
+        TestCase testCase = getTestCaseById(testCaseId);
+        if (testCase != null) {
             testCase.setUserStatus(username, status);
-            String overallStatus = testCase.determineOverallStatus(); // Determine the overall status
-            // Assuming you have a method setOverallStatus in your TestCase model
-            testCase.setOverallStatus(overallStatus); // Update the overall status
+            String overallStatus = testCase.determineOverallStatus();
+            testCase.setOverallStatus(overallStatus);
             updateCase(testCase);
         } else {
             throw new NoSuchElementException("Test case not found with ID: " + testCaseId);
         }
     }
 
-    // Update the status of a test case for a specific user
     public void setUserStatusForTestCase(Long testCaseId, String username, String status, String rejectionReason) {
-        Optional<TestCase> testCaseOptional = findById(testCaseId);
-        if (testCaseOptional.isPresent()) {
-            TestCase testCase = testCaseOptional.get();
+        TestCase testCase = getTestCaseById(testCaseId);
+        if (testCase != null) {
             testCase.setUserStatus(username, status);
-            // Determine the overall status
-            if ("Rejected".equals(status)) {
+            if ("Rejected".equalsIgnoreCase(status)) {
                 testCase.setUserReason(username, rejectionReason);
             }
             String overallStatus = testCase.determineOverallStatus();
@@ -190,178 +123,104 @@ public class ViewCaseService {
     }
 
     private Optional<TestCase> findById(Long idtest_cases) {
-        return testList.stream()
-                .filter(t -> t.getIdtest_cases() == idtest_cases.longValue())
-                .findFirst();
+        return Optional.ofNullable(getTestCaseById(idtest_cases));
     }
 
-    // Set the status of a test case to approved for a tester and send a POST
-    // request to the Hyperledger Fabric API
     public void updateCaseUser(TestCase updatedTestCase, List<Integer> userID, String testerUsername,
             List<Map<String, String>> testCaseSteps) {
-        Optional<TestCase> existingTestCaseOpt = findById(updatedTestCase.getIdtest_cases());
-        if (existingTestCaseOpt.isPresent()) {
-            TestCase existingTestCase = existingTestCaseOpt.get();
+        TestCase existingTestCase = getTestCaseById(updatedTestCase.getIdtest_cases());
+        if (existingTestCase != null) {
             existingTestCase.setProjectId(updatedTestCase.getProjectId());
-            // existingTestCase.setSmartContractID(updatedTestCase.getSmartContractID());
             existingTestCase.setTestCaseName(updatedTestCase.getTestCaseName());
             existingTestCase.setTest_desc(updatedTestCase.getTest_desc());
             existingTestCase.setDateCreated(updatedTestCase.getDateCreated());
             existingTestCase.setDeadline(updatedTestCase.getDeadline());
             existingTestCase.setUserID(userID);
-            // Here, you might also want to update the user statuses if necessary
-            // existingTestCase.setUserStatuses(updatedTestCase.getUserStatuses());
             existingTestCase.resetUserStatuses();
-            existingTestCase.setUserStatus(testerUsername, "Approved"); // set tester as approved
+            existingTestCase.setUserStatus(testerUsername, "Approved");
 
-            // Clear existing steps and expected results
             List<String> steps = new ArrayList<>();
             List<String> expectedResults = new ArrayList<>();
-
-            // Populate the steps and expected results from the input
-            if (testCaseSteps != null && !testCaseSteps.isEmpty()) {
-                for (Map<String, String> step : testCaseSteps) {
-                    steps.add(step.getOrDefault("step", "")); // Default to an empty string if null
-                    expectedResults.add(step.getOrDefault("expectedResult", "")); // Default to an empty string if null
-                }
+            for (Map<String, String> step : testCaseSteps) {
+                steps.add(step.getOrDefault("step", ""));
+                expectedResults.add(step.getOrDefault("expectedResult", ""));
             }
-
-            // Set the new steps and expected results
             existingTestCase.setTcSteps(steps);
             existingTestCase.setExpectedResults(expectedResults);
 
-            String overallStatus = existingTestCase.determineOverallStatus(); // Recalculate overall status
-            existingTestCase.setOverallStatus(overallStatus);
-
-            try {
-                // Prepare the request body (assuming field names match API)
-                Map<String, Object> requestBody = new HashMap<>();
-                String idtestCasesString = updatedTestCase.getIdtest_cases().toString();
-                requestBody.put("id", idtestCasesString);
-                requestBody.put("pid", updatedTestCase.getProjectId());
-                requestBody.put("tcn", updatedTestCase.getTestCaseName());
-                requestBody.put("tcdesc", updatedTestCase.getTest_desc());
-                requestBody.put("dtc", updatedTestCase.getDateCreated());
-                requestBody.put("dl", updatedTestCase.getDeadline());
-                requestBody.put("usrn", testerUsername);
-                requestBody.put("ostts", existingTestCase.getOverallStatus());
-                requestBody.put("tcSteps", testCaseSteps);
-
-                // Send POST request using RestTemplate
-                String url = HYPERLEDGER_BASE_URL + "/updateTestCase"; // Replace with your API URL
-                String response = restTemplate.postForObject(url, requestBody, String.class);
-            } catch (RestClientResponseException e) {
-                // Handle potential errors from the API call
-                logger.error("Error updating test case:", e);
-                // You can potentially handle specific error codes or exceptions here
-            }
+            existingTestCase.setOverallStatus(existingTestCase.determineOverallStatus());
+            updateCase(existingTestCase);
         } else {
             throw new NoSuchElementException("Test case not found with ID: " + updatedTestCase.getIdtest_cases());
         }
     }
 
-    // Update the status of a test case for a specific user and send a POST request
-    // to the Hyperledger Fabric API if overall status is Approved or Rejected
-    private void updateCase(TestCase testCase) {
-        // deleteCase(testCase.getIdtest_cases());
-        Long idtest_cases = testCase.getIdtest_cases();
-        testList.removeIf(t -> t.getIdtest_cases() == idtest_cases);
-        testList.add(testCase);
-        if (testCase.getOverallStatus().equals("Approved")) {
-            try {
-                // Prepare the request body (assuming field names match API)
-                Map<String, Object> requestBody = new HashMap<>();
-                String idtestCasesString = testCase.getIdtest_cases().toString();
-                requestBody.put("id", idtestCasesString);
-                requestBody.put("pid", testCase.getProjectId());
-                requestBody.put("tcn", testCase.getTestCaseName());
-                requestBody.put("tcdesc", testCase.getTest_desc());
-                requestBody.put("dtc", testCase.getDateCreated());
-                requestBody.put("dl", testCase.getDeadline());
-                requestBody.put("usrn", testCase.getUsername());
-                requestBody.put("ostts", testCase.getOverallStatus());
+    public void updateCase(TestCase testCase) {
+       Map<String, Object> body = testCaseAdapter.convertTestCaseToJsonStringifiedFormat(testCase);
 
-                // Send POST request using RestTemplate
-                String url = HYPERLEDGER_BASE_URL + "/updateTestCase"; // Replace with your API URL
-                String response = restTemplate.postForObject(url, requestBody, String.class);
-
-            } catch (RestClientResponseException e) {
-                // Handle potential errors from the API call
-                logger.error("Error updating test case:", e);
-                // You can potentially handle specific error codes or exceptions here
-            }
-        } else if (testCase.getOverallStatus().equals("Rejected")) {
-            try {
-                // Prepare the request body (assuming field names match API)
-                Map<String, Object> requestBody = new HashMap<>();
-                String idtestCasesString = testCase.getIdtest_cases().toString();
-                requestBody.put("id", idtestCasesString);
-                requestBody.put("pid", testCase.getProjectId());
-                requestBody.put("tcn", testCase.getTestCaseName());
-                requestBody.put("tcdesc", testCase.getTest_desc());
-                requestBody.put("dtc", testCase.getDateCreated());
-                requestBody.put("dl", testCase.getDeadline());
-                requestBody.put("usrn", testCase.getUsername());
-                requestBody.put("ostts", testCase.getOverallStatus());
-
-                // Send POST request using RestTemplate
-                String url = HYPERLEDGER_BASE_URL + "/updateTestCase"; // Replace with your API URL
-                String response = restTemplate.postForObject(url, requestBody, String.class);
-
-            } catch (RestClientResponseException e) {
-                // Handle potential errors from the API call
-                logger.error("Error updating test case:", e);
-                // You can potentially handle specific error codes or exceptions here
-            }
-        }
-
-    }
-
-    // Delete a test case and send a DELETE request to the Hyperledger Fabric API
-    public void deleteCase(Long idtest_cases) {
-        String idtestCasesString = idtest_cases.toString();
-        String requestBody = "" + idtestCasesString; // Simple string concatenation
-        logger.info("Request body: {}", requestBody);
-
-        String url = HYPERLEDGER_BASE_URL + "/deleteTestCase";
         try {
-            restTemplate.delete(url, requestBody);
-            // Success scenario (optional)
-            logger.info("Test case deleted successfully from Hyperledger Fabric");
+            String url = API_BASE_URL + "/updateTestCase";
+            restTemplate.put(url, body);
         } catch (RestClientResponseException e) {
-            // Handle potential errors from the API call
-            logger.error("Error deleting test case:", e);
-            // You can potentially handle specific error codes or exceptions here
+            logger.error("Error updating test case: ", e);
         }
-        // Remove the test case from the local list only if deletion on Hyperledger
-        // Fabric was successful (optional)
-        testList.removeIf(t -> t.getIdtest_cases() == idtest_cases);
     }
 
-    // Check if a username exists in the system
+    public void deleteCase(Long idtest_cases) {
+        try {
+            String url = API_BASE_URL + "/deleteTestCase/" + idtest_cases;
+            restTemplate.delete(url);
+            logger.info("Test case deleted successfully");
+        } catch (Exception e) {
+            logger.error("Error deleting test case: ", e);
+        }
+    }
+
     public boolean istestCaseExists(String testCaseName) {
-        return testList.stream().anyMatch(Test -> Test.getTestCaseName().equalsIgnoreCase(testCaseName));
-    }
-
-    // In ViewCaseService class
-
-    public TestCase getTestCaseById(Long idtest_cases) {
-        return testList.stream()
-                .filter(testCase -> testCase.getIdtest_cases().equals(idtest_cases))
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("Test case not found with ID: " + idtest_cases));
+        return findAllList().stream().anyMatch(tc -> tc.getTestCaseName().equalsIgnoreCase(testCaseName));
     }
 
     public List<TestCase> findTestCasesByUsername(String username) {
-        List<TestCase> userTestCases = new ArrayList<>();
-
-        for (TestCase testCase : testList) {
-            if (testCase.getUsernames(manageUserService).contains(username)) {
-                userTestCases.add(testCase);
+        List<TestCase> result = new ArrayList<>();
+        for (TestCase tc : findAllList()) {
+            if (tc.getUsernames(manageUserService).contains(username)) {
+                result.add(tc);
             }
         }
-
-        return userTestCases;
+        return result;
     }
 
+    private void sendAssignmentNotification(TestCase testCase) {
+        for (Integer userId : testCase.getUserID()) {
+            ManageUser user = manageUserService.getUserById(userId);
+            if (user != null && user.getEmail() != null) {
+                String subject = "New Test Case Assignment";
+                String message = String.format("Dear user,\nYou have been assigned a test case:\n" +
+                        "ID: %s\nName: %s\nDeadline: %s\n\nPlease review before the deadline.",
+                        testCase.getIdtest_cases(), testCase.getTestCaseName(), testCase.getDeadline());
+                mailService.sendAssignedMail(user.getEmail(), subject, message);
+            }
+        }
+    }
+
+    private void scheduleDeadlineNotification(TestCase testCase) {
+        LocalDateTime deadline = LocalDate.parse(testCase.getDeadline()).atStartOfDay();
+        long delay = ChronoUnit.SECONDS.between(LocalDateTime.now(), deadline);
+
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        scheduler.schedule(() -> sendDeadlineNotification(testCase), delay, TimeUnit.SECONDS);
+        scheduler.schedule(scheduler::shutdown, delay + 3600, TimeUnit.SECONDS);
+    }
+
+    private void sendDeadlineNotification(TestCase testCase) {
+        for (Integer userId : testCase.getUserID()) {
+            ManageUser user = manageUserService.getUserById(userId);
+            if (user != null && user.getEmail() != null) {
+                String subject = "Test Case Deadline Reached";
+                String message = String.format("Reminder:\nTest Case %s (%s) deadline has passed on %s.",
+                        testCase.getIdtest_cases(), testCase.getTestCaseName(), testCase.getDeadline());
+                mailService.sendAssignedMail(user.getEmail(), subject, message);
+            }
+        }
+    }
 }

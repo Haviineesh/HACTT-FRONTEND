@@ -32,7 +32,7 @@ import demo_ver.demo.model.Build;
 public class BuildService {
 
     private static final Logger logger = LoggerFactory.getLogger(BuildService.class);
-    private static final String HYPERLEDGER_BASE_URL = "https://1f1e-113-211-124-209.ngrok-free.app";
+    private static final String HYPERLEDGER_BASE_URL = "https://dee1-113-211-96-19.ngrok-free.app";
 
     @Autowired
     private RestTemplate restTemplate = new RestTemplate();

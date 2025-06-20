@@ -31,6 +31,10 @@
             min-width: 82px;
         }
 
+        .testversion-column {
+            min-width: 60px;
+        }
+
         .deadline-column {
             min-width: 110px;
         }
@@ -90,6 +94,7 @@
             <thead>
                 <tr>
                     <th scope="col" class="projectid-column">Project ID</th>
+                    <th scope="col" class="testversion-column">Version</th>
                     <th scope="col" class="testcaseid-column ">Test Case ID</th>
                     <th scope="col">Test Case Name</th>
                     <th scope="col" class="deadline-column ">Deadline</th>
@@ -107,6 +112,7 @@
                 <tr th:each="test, iStat : ${testCase}">
                     <!-- <tr th:each="test, iStat : ${allTestCases}"> -->
                     <td th:text="${test.projectId}"></td>
+                    <td th:text="${test.testCaseVersion}"></td>
                     <td th:text="${test.idtest_cases}"></td>
                     <td th:text="${test.testCaseName}"></td>
                     <td th:text="${test.deadline}"></td>

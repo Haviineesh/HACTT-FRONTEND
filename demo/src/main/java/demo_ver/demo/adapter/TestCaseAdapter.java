@@ -46,23 +46,29 @@ public class TestCaseAdapter {
             testCase.setUsername(node.get("username").asText());
             testCase.setCreatedBy(node.get("createdBy").asText());
             testCase.setStatus(node.get("status").asText());
+            testCase.setTestCaseVersion(node.get("testCaseVersion").asText());
 
             ObjectMapper stringMapper = new ObjectMapper();
 
             String userIdRaw = sanitize(node.get("userID").asText());
-            testCase.setUserID(stringMapper.readValue(userIdRaw, new TypeReference<List<Integer>>() {}));
+            testCase.setUserID(stringMapper.readValue(userIdRaw, new TypeReference<List<Integer>>() {
+            }));
 
             String stepsRaw = sanitize(node.get("tcSteps").asText());
-            testCase.setTcSteps(stringMapper.readValue(stepsRaw, new TypeReference<List<String>>() {}));
+            testCase.setTcSteps(stringMapper.readValue(stepsRaw, new TypeReference<List<String>>() {
+            }));
 
             String resultsRaw = sanitize(node.get("expectedResults").asText());
-            testCase.setExpectedResults(stringMapper.readValue(resultsRaw, new TypeReference<List<String>>() {}));
+            testCase.setExpectedResults(stringMapper.readValue(resultsRaw, new TypeReference<List<String>>() {
+            }));
 
             String statusesRaw = sanitize(node.get("userStatuses").asText());
-            testCase.setUserStatuses(stringMapper.readValue(statusesRaw, new TypeReference<Map<String, String>>() {}));
+            testCase.setUserStatuses(stringMapper.readValue(statusesRaw, new TypeReference<Map<String, String>>() {
+            }));
 
             String reasonsRaw = sanitize(node.get("userReasons").asText());
-            testCase.setUserReason(stringMapper.readValue(reasonsRaw, new TypeReference<Map<String, String>>() {}));
+            testCase.setUserReason(stringMapper.readValue(reasonsRaw, new TypeReference<Map<String, String>>() {
+            }));
 
             return testCase;
         } catch (Exception e) {
@@ -98,6 +104,7 @@ public class TestCaseAdapter {
                     testCase.getTcSteps() != null ? testCase.getTcSteps() : new ArrayList<String>()));
             map.put("expectedResults", mapper.writeValueAsString(
                     testCase.getExpectedResults() != null ? testCase.getExpectedResults() : new ArrayList<String>()));
+            map.put("testCaseVersion", safeString(testCase.getTestCaseVersion()));
         } catch (Exception e) {
             System.err.println("Error serializing TestCase to blockchain format: " + e.getMessage());
         }
@@ -110,7 +117,8 @@ public class TestCaseAdapter {
     }
 
     private static String sanitize(String jsonText) {
-        if (jsonText == null) return "";
+        if (jsonText == null)
+            return "";
         return jsonText.replaceAll("^\\\"|\\\"$", "").replace("\\\"", "\"");
     }
 }

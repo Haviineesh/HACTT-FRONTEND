@@ -26,6 +26,7 @@
                     <h4 class="card-title">Details</h4>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">ID: <span th:text="${testCase.idtest_cases}"></span></li>
+                        <li class="list-group-item">Version: <span th:text="${testCase.testCaseVersion}"></span></li>
                         <li class="list-group-item">
                             Description:
                             <textarea class="form-control" th:text="${testCase.test_desc}" rows="5"></textarea>

@@ -38,11 +38,12 @@ public class SecurityConfig extends WebSecurityConfiguration {
         public SpringTemplateEngine templateEngine(ITemplateResolver templateResolver, SpringSecurityDialect sec) {
                 final SpringTemplateEngine templateEngine = new SpringTemplateEngine();
                 templateEngine.setTemplateResolver(templateResolver);
-                templateEngine.addDialect(sec); 
+                templateEngine.addDialect(sec);
                 return templateEngine;
         }
 
         private final RestTemplate restTemplate = new RestTemplate();
+
         @Bean
         public ManageUserService manageUserService(PasswordEncoder passwordEncoder, RestTemplate restTemplate) {
                 return new ManageUserService(passwordEncoder, restTemplate);
@@ -68,12 +69,30 @@ public class SecurityConfig extends WebSecurityConfiguration {
                                                 .permitAll()
                                                 .requestMatchers("/resources/**", "/static/**", "/webjars/**")
                                                 .permitAll()
-                                                .requestMatchers("/manageuser", "/adduser", "/deleteuser/{userID}","/edituser/{userID}", "/updateuser", "/manageroles", 
-                                                "/createrole", "/editrole/{id}", "/editrole", "/deleterole/{id}").hasRole("Admin")
-                                                .requestMatchers("/view", "/add", "/save", "/deleteCase/{idtest_cases}", "/editCase/{idtest_cases}", "/update", 
-                                                "/testcases/details/{idtest_cases}", "/testcases/approveStatus/{idtest_cases}", "/testcases/rejectStatus/{idtest_cases}", 
-                                                "/testcases/setUnderReview/{idtest_cases}", "/testcases/setNeedsRevision/{idtest_cases}").hasAnyRole("Tester", "Product Manager", "Developer", "Stakeholder")
-                                                .requestMatchers("/home", "/changepassword").hasAnyRole("Admin", "Tester", "Product Manager", "Developer", "Stakeholder")
+                                                .requestMatchers("/manageuser", "/adduser", "/deleteuser/{userID}",
+                                                                "/edituser/{userID}", "/updateuser", "/manageroles",
+                                                                "/createrole", "/editrole/{id}", "/editrole",
+                                                                "/deleterole/{id}")
+                                                .hasRole("Admin")
+                                                .requestMatchers("/view", "/add", "/save", "/deleteCase/{idtest_cases}",
+                                                                "/editCase/{idtest_cases}", "/update",
+                                                                "/testcases/details/{idtest_cases}",
+                                                                "/testcases/approveStatus/{idtest_cases}",
+                                                                "/testcases/rejectStatus/{idtest_cases}",
+                                                                "/testcases/setUnderReview/{idtest_cases}",
+                                                                "/testcases/setNeedsRevision/{idtest_cases}")
+                                                .hasAnyRole("Tester", "Product Manager", "Developer", "Stakeholder",
+                                                                "QA", "Business Analyst", "UX Designer", "Tech Lead",
+                                                                "Scrum Master",
+                                                                "System Architect", "Security Engineer",
+                                                                "DevOps Engineer")
+                                                .requestMatchers("/home", "/changepassword")
+                                                .hasAnyRole("Admin", "Tester", "Product Manager", "Developer",
+                                                                "Stakeholder", "QA",
+                                                                "Business Analyst", "UX Designer", "Tech Lead",
+                                                                "Scrum Master",
+                                                                "System Architect", "Security Engineer",
+                                                                "DevOps Engineer")
                                                 .anyRequest().authenticated())
                                 .csrf(AbstractHttpConfigurer::disable)
                                 .logout(logout -> logout.addLogoutHandler((request, response, authentication) -> {

@@ -1,35 +1,46 @@
 <div th:fragment="navbar">
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" th:href="@{/home}">Home</a>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <a class="navbar-brand font-weight-bold text-white" th:href="@{/home}">
+      <i class="bi bi-house-door-fill mr-1"></i> Home
+    </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
       aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item" th:if="${isAdmin}">
-          <a class="nav-link" th:href="@{/manageuser}">Users</a>
+          <a class="nav-link text-white" th:href="@{/manageuser}">
+            <i class="bi bi-people-fill mr-1"></i> Users
+          </a>
         </li>
 
         <li class="nav-item" th:unless="${isAdmin}">
-          <a id="test-case-link" class="nav-link" th:href="@{/view}">Test Case</a>
+          <a id="test-case-link" class="nav-link text-white" th:href="@{/view}">
+            <i class="bi bi-clipboard-check mr-1"></i> Test Case
+          </a>
         </li>
 
         <li class="nav-item" th:if="${isAdmin}">
-          <a class="nav-link" th:href="@{/manageroles}">Roles</a>
+          <a class="nav-link text-white" th:href="@{/manageroles}">
+            <i class="bi bi-shield-lock-fill mr-1"></i> Roles
+          </a>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link" th:href="@{/changepassword}">Change Password</a>
+          <a class="nav-link text-white" th:href="@{/changepassword}">
+            <i class="bi bi-key-fill mr-1"></i> Change Password
+          </a>
         </li>
 
-
+        <!-- Test Plan Dropdown -->
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownTestPlan" role="button" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false">
-            Test Plan
+          <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdownTestPlan" role="button"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="bi bi-journal-check mr-1"></i> Test Plan
           </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdownTestPlan">
+          <div class="dropdown-menu shadow-sm" aria-labelledby="navbarDropdownTestPlan">
             <a class="dropdown-item" th:href="@{/createTestPlan}">Create Test Plan</a>
             <a class="dropdown-item" th:href="@{/viewTestPlans}">Test Plan List</a>
           </div>
@@ -37,11 +48,11 @@
 
         <!-- Test Suite Dropdown -->
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownTestSuite" role="button" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false">
-            Test Suite
+          <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdownTestSuite" role="button"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="bi bi-layout-text-window-reverse mr-1"></i> Test Suite
           </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdownTestSuite">
+          <div class="dropdown-menu shadow-sm" aria-labelledby="navbarDropdownTestSuite">
             <a class="dropdown-item" th:href="@{/createTestSuite}">Create Test Suite</a>
             <a class="dropdown-item" th:href="@{/viewTestSuites}">Test Suites List</a>
           </div>
@@ -49,11 +60,11 @@
 
         <!-- Builds Dropdown -->
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownTestResults" role="button"
+          <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdownTestResults" role="button"
             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Builds
+            <i class="bi bi-hammer mr-1"></i> Builds
           </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdownBuild">
+          <div class="dropdown-menu shadow-sm" aria-labelledby="navbarDropdownBuild">
             <a class="dropdown-item" th:href="@{/createBuild}">Create Builds</a>
             <a class="dropdown-item" th:href="@{/viewBuilds}">View Builds</a>
           </div>
@@ -64,8 +75,8 @@
       <ul class="navbar-nav ml-auto">
         <li class="nav-item">
           <form th:action="@{/logout}" method="post" class="form-inline">
-            <button type="submit" class="btn btn-block border">
-              <i class="bi bi-box-arrow-right"></i> Logout
+            <button type="submit" class="btn btn-outline-light">
+              <i class="bi bi-box-arrow-right mr-1"></i> Logout
             </button>
           </form>
         </li>

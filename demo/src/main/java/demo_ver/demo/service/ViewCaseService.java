@@ -178,7 +178,7 @@ public class ViewCaseService {
         } catch (RestClientResponseException e) {
             logger.error("Error updating test case: ", e);
         }
-        sendAssignmentNotification(testCase);
+        sendUpdateNotification(testCase);
         scheduleDeadlineNotification(testCase);
     }
 
@@ -239,4 +239,39 @@ public class ViewCaseService {
             }
         }
     }
+
+    private void sendUpdateNotification(TestCase testCase) {
+        for (Integer userId : testCase.getUserID()) {
+            ManageUser user = manageUserService.getUserById(userId);
+            if (user != null && user.getEmail() != null) {
+                String username = user.getUsername();
+                String userStatus = testCase.getUserStatuses().getOrDefault(username, "Not Set");
+                String userReason = testCase.getUserReason().getOrDefault(username, "None");
+
+                String subject = "Test Case Updated: " + testCase.getTestCaseName();
+                String message = String.format(
+                        "Dear %s,\n\nThe following test case has been updated:\n" +
+                                "Test Case ID: %s\n" +
+                                "Name       : %s\n" +
+                                "Version    : %s\n" +
+                                "Deadline   : %s\n" +
+                                "Overall Status: %s\n" +
+                                "Your Current Status: %s\n" +
+                                "Your Rejection Reason (if any): %s\n\n" +
+                                "Please review the changes and update your feedback if necessary.\n\n" +
+                                "Thank you.",
+                        username,
+                        testCase.getIdtest_cases(),
+                        testCase.getTestCaseName(),
+                        testCase.getTestCaseVersion(),
+                        testCase.getDeadline(),
+                        testCase.getOverallStatus(),
+                        userStatus,
+                        userReason);
+
+                mailService.sendAssignedMail(user.getEmail(), subject, message);
+            }
+        }
+    }
+
 }

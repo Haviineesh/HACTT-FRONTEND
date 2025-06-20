@@ -121,12 +121,14 @@
                         <div th:each="userStatus : ${test.userStatuses}">
                             <span th:text="${userStatus.key}">Username</span>: <span
                                 th:text="${userStatus.value}">Status</span><br />
-                        </div>  
+                        </div>
                     </td>
                     <td th:unless="${test.overallStatus == 'Approved'} OR ${isTester}">
                         <form th:action="@{/setUserStatus}" method="post">
                             <input type="hidden" th:name="testCaseId" th:value="${test.idtest_cases}" />
-                            <input type="hidden" id="rejectionReasonInput" name="rejectionReason" />
+                            <!-- <input type="hidden" id="rejectionReasonInput" name="rejectionReason" /> -->
+                            <input type="hidden" th:id="'rejectionReasonInput' + ${test.idtest_cases}"
+                                name="rejectionReason" />
                             <select name="status" onchange="handleStatusChange(this)" data-previous-value="Pending">
                                 <option value="Pending">Pending</option>
                                 <option value="Approved">Approved</option>
@@ -261,40 +263,36 @@
     <script>
 
         function handleStatusChange(selectElement) {
-            const status = selectElement.value;
-            const rejectionReasonInput = document.getElementById('rejectionReasonInput');
+            const form = selectElement.closest("form");
+            const rejectionReasonInput = form.querySelector("input[name='rejectionReason']");
 
-            if (status === 'Rejected') {
-                // const title = "Rejection Reason"; // Customize the title here (optional)
-                // const reason = prompt(title, "");  // Provide an empty default value (optional)
+            if (selectElement.value === 'Rejected') {
                 let reason;
                 do {
-                    const title = "Rejection Reason (Minimum 2 Words)"; // Customize the title here
-                    reason = prompt(title, "");  // Provide an empty default value
+                    const title = "Rejection Reason (Minimum 2 Words)";
+                    reason = prompt(title, "");  // Prompt user
 
-                    // Validate reason by splitting words and checking length
                     if (reason !== null) {
-                        const words = reason.trim().split(/\s+/); // Split on whitespace (including spaces, tabs, newlines)
+                        const words = reason.trim().split(/\s+/);
                         if (words.length < 2) {
                             alert("Please enter at least 2 words for the rejection reason.");
                             selectElement.value = "Pending";
                             selectElement.dataset.previousValue = "Pending";
                         }
                     }
-                } while (reason !== null && words.length < 3); // Repeat until reason is valid or cancelled
+                } while (reason !== null && reason.trim().split(/\s+/).length < 2);
 
                 if (reason !== null) {
                     rejectionReasonInput.value = reason;
                 } else {
-                    // Only set previousValue to Pending if reason is null (cancelled)
                     selectElement.value = "Pending";
                     selectElement.dataset.previousValue = "Pending";
                 }
             }
 
-            // Update previousValue regardless of selection (optional)
-            selectElement.dataset.previousValue = status;
+            selectElement.dataset.previousValue = selectElement.value;
         }
+
 
         $(document).ready(function () {
             // Filtering logic

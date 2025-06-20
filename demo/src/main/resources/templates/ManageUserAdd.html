@@ -1,97 +1,99 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Add New User</title>
 
-    <link
-      rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    />
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<head>
+  <meta charset="UTF-8" />
+  <title>Add New User</title>
 
-  </head>
-  <body>
-    <div class="container mt-5">
-      <h2 class="mb-4">Add New User</h2>
-      <form th:action="@{/adduser}" method="post">
-        <div class="form-group">
-          <label for="username">Username</label>
-          <input
-            type="text"
-            class="form-control"
-            id="username"
-            name="username"
-            required
-          />
-        </div>
-        
-        <!-- Display an alert if the username already exists -->
-        <div th:if="${usernameExists}" class="alert alert-danger" role="alert">
-          Username already exists! Please choose a different username.
-        </div>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
 
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input
-            type="email"
-            class="form-control"
-            id="email"
-            name="email"
-            required
-          />
-        </div>
-        <!-- Display an alert if the email already exists -->
-        <div th:if="${emailExists}" class="alert alert-danger" role="alert">
-          Email already exists!
-        </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <!-- Display auto-generated random password (replace with actual logic) -->
-          <input
-            type="password"
-            class="form-control"
-            id="password"
-            name="password"
-            readonly
-          />
-        </div>
-        <div class="form-group">
-          <label for="role">Role</label>
-          <select class="form-control" id="role" name="role" required>
-            <option th:each="role : ${roles}" th:if="${role.roleName.startsWith('ROLE_')}" th:text="${role.roleName.substring(5)}"th:value="${role.roleID}"></option>
-          </select>
-        </div>
-        <button type="submit" class="btn btn-primary">Save User</button>
-        <button
-          type="button"
-          class="btn btn-danger"
-          onclick="window.location.href='/manageuser'"
-        >
-          Cancel
-        </button>
-      </form>
+<body>
+  <div class="container mt-5">
+    <div class="card shadow-sm">
+      <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Add New User</h4>
+      </div>
+      <div class="card-body">
+        <form th:action="@{/adduser}" method="post">
 
-    <!-- JavaScript to generate random password -->
-    <script>
-      $(document).ready(function () {
-        // Function to generate a random password
-        function generateRandomPassword() {
-          const characters =
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-          let password = "";
-          for (let i = 0; i < 6; i++) {
-            const randomIndex = Math.floor(Math.random() * characters.length);
-            password += characters.charAt(randomIndex);
-          }
-          return password;
+          <!-- Username -->
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" class="form-control" id="username" name="username" required />
+          </div>
+
+          <!-- Username Exists Alert -->
+          <div th:if="${usernameExists}" class="alert alert-danger" role="alert">
+            Username already exists! Please choose a different username.
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" name="email" required />
+          </div>
+
+          <!-- Email Exists Alert -->
+          <div th:if="${emailExists}" class="alert alert-danger" role="alert">
+            Email already exists!
+          </div>
+
+          <!-- Password (auto-generated) -->
+          <div class="form-group">
+            <label for="password">Password (auto-generated)</label>
+            <div class="input-group">
+              <input type="password" class="form-control" id="password" name="password" readonly />
+              <div class="input-group-append">
+                <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Role Dropdown -->
+          <div class="form-group">
+            <label for="role">Role</label>
+            <select class="form-control" id="role" name="role" required>
+              <option value="" disabled selected>-- Select Role --</option>
+              <option th:each="role : ${roles}" th:if="${role.roleName.startsWith('ROLE_')}"
+                th:value="${role.roleID}" th:text="${role.roleName.substring(5)}">
+              </option>
+            </select>
+          </div>
+
+          <!-- Buttons -->
+          <div class="d-flex justify-content-start">
+            <button type="submit" class="btn btn-success">
+              <i class="bi bi-save"></i> Save User
+            </button>
+            <button type="button" class="btn btn-danger ml-2" onclick="window.location.href='/manageuser'">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript to Generate Random Password -->
+  <script>
+    $(document).ready(function () {
+      function generateRandomPassword() {
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        let password = "";
+        for (let i = 0; i < 8; i++) {
+          password += chars.charAt(Math.floor(Math.random() * chars.length));
         }
+        return password;
+      }
 
-        // Set the generated random password to the password input field
-        $("#password").val(generateRandomPassword());
-      });
-    </script>
-  </body>
+      $("#password").val(generateRandomPassword());
+    });
+  </script>
+</body>
+
 </html>

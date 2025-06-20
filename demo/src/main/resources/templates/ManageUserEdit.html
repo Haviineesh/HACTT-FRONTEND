@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8" />
     <title>Edit User</title>
@@ -22,45 +23,55 @@
             return confirm("Are you sure you want to update this user?");
         }
     </script>
-
 </head>
+
 <body>
-    <div class="container mt-5">
-        <h2 class="mb-4">Edit User</h2>
+    <div class="container mt-5 p-4 border rounded shadow-sm bg-light">
+        <h2 class="mb-4 text-center">Edit User</h2>
+
         <form th:action="@{/updateuser}" th:object="${manageUser}" method="post" onsubmit="return validateForm()">
             <input type="hidden" th:field="*{userID}" />
+
+            <!-- Email Field -->
             <div class="form-group">
-                <label for="email">Email</label>
+                <label for="email"><strong>Email</strong></label>
                 <input type="email" class="form-control" id="email" th:field="*{email}" placeholder="Email" required />
             </div>
             <div th:if="${emailExists}" class="alert alert-danger" role="alert">
                 Email already exists! Please choose a different email.
             </div>
-       
+
+            <!-- Username Field -->
             <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" class="form-control" id="username" th:field="*{username}" placeholder="Username" required />
+                <label for="username"><strong>Username</strong></label>
+                <input type="text" class="form-control" id="username" th:field="*{username}" placeholder="Username"
+                    required />
             </div>
             <div th:if="${usernameExists}" class="alert alert-danger" role="alert">
                 Username already exists! Please choose a different username.
             </div>
-            
-          
+
+            <!-- Role Dropdown -->
             <div class="form-group">
-                <label for="role">Role</label>
+                <label for="role"><strong>Role</strong></label>
                 <select class="form-control" id="role" name="roleID" th:field="*{roleID}">
-                    <option th:each="role : ${roles}" th:if="${role.roleName.startsWith('ROLE_')}" th:text="${role.roleName.substring(5)}"th:value="${role.roleID}"></option>
+                    <option th:each="role : ${roles}" th:if="${role.roleName.startsWith('ROLE_')}"
+                        th:text="${role.roleName.substring(5)}" th:value="${role.roleID}">
+                    </option>
                 </select>
             </div>
-            <div class="form-row">
-                <div class="col">
-                    <button type="submit" class="btn btn-primary float-right" onclick="return confirmUpdate()">Update User</button>
-                </div>
-                <div class="col">
-                    <a href="/manageuser" class="btn btn-secondary">Back</a>
-                </div>
-               
+
+            <!-- Action Buttons -->
+            <div class="form-group d-flex justify-content-between mt-4">
+                <a href="/manageuser" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left-circle"></i> Back
+                </a>
+                <button type="submit" class="btn btn-primary" onclick="return confirmUpdate()">
+                    <i class="bi bi-save"></i> Update User
+                </button>
+            </div>
         </form>
     </div>
 </body>
+
 </html>

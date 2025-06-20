@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8" />
+       <meta charset="UTF-8" />
     <title>View Test Case</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
@@ -11,10 +11,30 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <style>
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        h3 {
+            font-weight: bold;
+            color: #343a40;
+        }
+
         .table thead th {
-            background-color: #f8f9fa;
+            background-color: #343a40;
+            color: #ffffff;
             text-align: center;
             vertical-align: middle;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        .table-bordered {
+            border-radius: 10px;
+            overflow: hidden;
         }
 
         .action-column {
@@ -50,36 +70,35 @@
             text-align: center;
         }
 
-        .status-approve {
-            background-color: #d9ecdd;
-            color: green;
-            padding: 5px 10px;
-            border-radius: 5px;
+        .status-approve,
+        .status-reject,
+        .status-pending,
+        .status-needs-revision {
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
             display: inline-block;
         }
 
+        .status-approve {
+            background-color: #e1f3e8;
+            color: #2e7d32;
+        }
+
         .status-reject {
-            background-color: #f8e0e2;
-            color: red;
-            padding: 5px 10px;
-            border-radius: 5px;
-            display: inline-block;
+            background-color: #fbeaea;
+            color: #c62828;
         }
 
         .status-pending {
             background-color: #fff3cd;
             color: #856404;
-            padding: 5px 10px;
-            border-radius: 5px;
-            display: inline-block;
         }
 
         .status-needs-revision {
             background-color: #d6ebef;
             color: #0c5460;
-            padding: 5px 10px;
-            border-radius: 5px;
-            display: inline-block;
         }
 
         .clickable-card {
@@ -88,13 +107,12 @@
             border-left: 5px solid transparent;
             border-radius: 0.5rem;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            background-color: #ffffff;
         }
 
         .clickable-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-            background-color: rgba(248, 249, 250, 0.8);
-            /* Light gray background */
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
         }
 
         .clickable-card .card-body {
@@ -113,19 +131,25 @@
             margin: 0;
         }
 
-        .clickable-card[data-status="Approved"]:hover {
-            background-color: rgba(220, 255, 230, 0.732);
-            /* Light green tint */
+        .form-control,
+        .btn {
+            border-radius: 0.375rem;
         }
 
-        .clickable-card[data-status="Rejected"]:hover {
-            background-color: rgba(255, 230, 230, 0.791);
-            /* Light red tint */
+        .btn-outline-warning,
+        .btn-outline-primary,
+        .btn-outline-danger {
+            border-width: 1.5px;
         }
 
-        .clickable-card[data-status="Pending"]:hover {
-            background-color: rgba(255, 250, 200, 0.731);
-            /* Light yellow tint */
+        .btn-outline-warning:hover,
+        .btn-outline-primary:hover,
+        .btn-outline-danger:hover {
+            opacity: 0.85;
+        }
+
+        .modal-content {
+            border-radius: 1rem;
         }
     </style>
 </head>
@@ -134,7 +158,7 @@
     <div th:replace="~{fragments/navbar :: navbar}"></div>
 
     <!-- Summary Stats Row -->
-    <div class="row text-center mb-4">
+    <div class="row text-center mb-4 mt-4">
         <div class="col-md-3 mb-2">
             <div class="card border-left-success shadow-sm h-100 py-2 clickable-card" data-status="">
                 <div class="card-body">
@@ -195,7 +219,7 @@
 
         <div class="table-responsive">
             <table class="table table-bordered table-hover">
-                <thead class="thead-light">
+                <thead class="thead-dark">
                     <tr>
                         <th class="projectid-column">Project ID</th>
                         <th class="testversion-column">Version</th>

@@ -46,8 +46,9 @@
                     <td th:text="${iStat.count}"></td>
                     <td th:text="${role.roleID}"></td>
                     <td>
-                    <span th:if="${role.roleName.startsWith('ROLE_')}" th:text="${role.roleName.substring(5)}"></span>
-                    <span th:unless="${role.roleName.startsWith('ROLE_')}" th:text="${role.roleName}"></span>
+                        <span th:if="${role.roleName.startsWith('ROLE_')}"
+                            th:text="${role.roleName.substring(5)}"></span>
+                        <span th:unless="${role.roleName.startsWith('ROLE_')}" th:text="${role.roleName}"></span>
                     </td>
                     <td th:text="${role.description}"></td>
                     <td>
@@ -57,10 +58,24 @@
                         <!-- <a class="btn btn-danger" th:href="@{'/deleterole/' +${role.roleID}}">
                             <i class="bi bi-trash"></i>
                         </a> -->
-                        <a class="btn btn-danger" data-toggle="modal"
+                        <!-- <a class="btn btn-danger" data-toggle="modal"
                             th:attr="data-target='#deleteModal' + ${role.roleID}">
                             <i class="bi bi-trash"></i>
-                        </a>
+                        </a> -->
+                        <!-- Disable delete for roleID 1001, 1002, 1003 -->
+                        <!-- Delete button with condition -->
+                        <!-- <span th:if="${role.roleID == 1001 or role.roleID == 1002 or role.roleID == 1003}">
+                            <button class="btn btn-danger" disabled>
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </span> -->
+                        <span th:unless="${role.roleID == 1001 or role.roleID == 1002 or role.roleID == 1003}">
+                            <a class="btn btn-danger" data-toggle="modal"
+                                th:attr="data-target='#deleteModal' + ${role.roleID}">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </span>
+
                     </td>
                 </tr>
             </tbody>

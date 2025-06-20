@@ -34,7 +34,7 @@ import demo_ver.demo.utils.RandomNumber;
 @Service
 public class ViewCaseService {
     private static final Logger logger = LoggerFactory.getLogger(ViewCaseService.class);
-    private static final String API_BASE_URL = "https://4d5f-113-211-124-209.ngrok-free.app";
+    private static final String API_BASE_URL = "https://1f1e-113-211-124-209.ngrok-free.app";
 
     private final RestTemplate restTemplate;
     private final TestCaseAdapter testCaseAdapter;
@@ -79,7 +79,7 @@ public class ViewCaseService {
         testCase.setIdtest_cases(RandomNumber.getRandom(1, 1000));
         testCase.setUserID(userID);
         testCase.setOverallStatus("Pending");
-        testCase.setUserStatus(testerUsername, "Pending");
+        testCase.setUserStatus(testerUsername, "Approved");
 
         Map<String, Object> body = testCaseAdapter.convertTestCaseToJsonStringifiedFormat(testCase);
 
@@ -113,6 +113,20 @@ public class ViewCaseService {
             testCase.setUserStatus(username, status);
             if ("Rejected".equalsIgnoreCase(status)) {
                 testCase.setUserReason(username, rejectionReason);
+                // Send rejection email to all users in the test case
+                for (Integer userId : testCase.getUserID()) {
+                    ManageUser user = manageUserService.getUserById(userId);
+                    if (user != null && user.getEmail() != null) {
+                        String subject = "Test Case Rejected";
+                        String message = String.format(
+                                "Dear user,\n\nThe test case \"%s\" (ID: %s) has been rejected.\n\nReason by %s: %s\n\nPlease review the feedback and update accordingly.",
+                                testCase.getTestCaseName(),
+                                testCase.getIdtest_cases(),
+                                username,
+                                rejectionReason);
+                        mailService.sendAssignedMail(user.getEmail(), subject, message);
+                    }
+                }
             }
             String overallStatus = testCase.determineOverallStatus();
             testCase.setOverallStatus(overallStatus);
@@ -156,7 +170,7 @@ public class ViewCaseService {
     }
 
     public void updateCase(TestCase testCase) {
-       Map<String, Object> body = testCaseAdapter.convertTestCaseToJsonStringifiedFormat(testCase);
+        Map<String, Object> body = testCaseAdapter.convertTestCaseToJsonStringifiedFormat(testCase);
 
         try {
             String url = API_BASE_URL + "/updateTestCase";
@@ -164,6 +178,8 @@ public class ViewCaseService {
         } catch (RestClientResponseException e) {
             logger.error("Error updating test case: ", e);
         }
+        sendAssignmentNotification(testCase);
+        scheduleDeadlineNotification(testCase);
     }
 
     public void deleteCase(Long idtest_cases) {

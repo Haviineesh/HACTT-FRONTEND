@@ -1,75 +1,119 @@
 <div th:fragment="navbar">
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" th:href="@{/home}">Home</a>
+  <nav class="navbar navbar-expand-lg navbar-light"
+       style="background-color: #ffffff; border-bottom: 1px solid #dee2e6; box-shadow: 0 4px 12px rgba(0,0,0,0.05); padding: 0.75rem 1rem; z-index: 1050; position: relative;">
+
+    <a class="navbar-brand font-weight-bold text-dark d-flex align-items-center" th:href="@{/home}"
+       style="font-size: 1.25rem;">
+      <i class="bi bi-house-door-fill mr-2 text-primary" style="font-size: 1.3rem;"></i> Home
+    </a>
+
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
       aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item" th:if="${isAdmin}">
-          <a class="nav-link" th:href="@{/manageuser}">Users</a>
+          <a class="nav-link text-dark d-flex align-items-center" th:href="@{/manageuser}"
+             style="transition: color 0.2s;">
+            <i class="bi bi-people-fill mr-2 text-secondary"></i> Users
+          </a>
         </li>
 
         <li class="nav-item" th:unless="${isAdmin}">
-          <a id="test-case-link" class="nav-link" th:href="@{/view}">Test Case</a>
+          <a class="nav-link text-dark d-flex align-items-center" th:href="@{/view}"
+             style="transition: color 0.2s;">
+            <i class="bi bi-clipboard-check mr-2 text-secondary"></i> Test Case
+          </a>
         </li>
 
         <li class="nav-item" th:if="${isAdmin}">
-          <a class="nav-link" th:href="@{/manageroles}">Roles</a>
+          <a class="nav-link text-dark d-flex align-items-center" th:href="@{/manageroles}"
+             style="transition: color 0.2s;">
+            <i class="bi bi-shield-lock mr-2 text-secondary"></i> Roles
+          </a>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link" th:href="@{/changepassword}">Change Password</a>
+          <a class="nav-link text-dark d-flex align-items-center" th:href="@{/changepassword}"
+             style="transition: color 0.2s;">
+            <i class="bi bi-key mr-2 text-secondary"></i> Change Password
+          </a>
         </li>
 
-
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownTestPlan" role="button" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false">
-            Test Plan
+        <!-- Dropdown: Test Plan -->
+        <li class="nav-item dropdown" style="position: relative;">
+          <a class="nav-link dropdown-toggle text-dark d-flex align-items-center" href="#" id="navbarDropdownTestPlan"
+             role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+             style="transition: color 0.2s;">
+            <i class="bi bi-journal-check mr-2 text-secondary"></i> Test Plan
           </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdownTestPlan">
+          <div class="dropdown-menu border-0 shadow-sm mt-1"
+               style="z-index: 2000; border-radius: 0.5rem; overflow: hidden;">
             <a class="dropdown-item" th:href="@{/createTestPlan}">Create Test Plan</a>
             <a class="dropdown-item" th:href="@{/viewTestPlans}">Test Plan List</a>
           </div>
         </li>
 
-        <!-- Test Suite Dropdown -->
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownTestSuite" role="button" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false">
-            Test Suite
+        <!-- Dropdown: Test Suite -->
+        <li class="nav-item dropdown" style="position: relative;">
+          <a class="nav-link dropdown-toggle text-dark d-flex align-items-center" href="#" id="navbarDropdownTestSuite"
+             role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+             style="transition: color 0.2s;">
+            <i class="bi bi-layout-text-window-reverse mr-2 text-secondary"></i> Test Suite
           </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdownTestSuite">
+          <div class="dropdown-menu border-0 shadow-sm mt-1"
+               style="z-index: 2000; border-radius: 0.5rem; overflow: hidden;">
             <a class="dropdown-item" th:href="@{/createTestSuite}">Create Test Suite</a>
             <a class="dropdown-item" th:href="@{/viewTestSuites}">Test Suites List</a>
           </div>
         </li>
 
-        <!-- Builds Dropdown -->
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownTestResults" role="button"
-            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Builds
+        <!-- Dropdown: Builds -->
+        <li class="nav-item dropdown" style="position: relative;">
+          <a class="nav-link dropdown-toggle text-dark d-flex align-items-center" href="#" id="navbarDropdownBuilds"
+             role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+             style="transition: color 0.2s;">
+            <i class="bi bi-hammer mr-2 text-secondary"></i> Builds
           </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdownBuild">
+          <div class="dropdown-menu border-0 shadow-sm mt-1"
+               style="z-index: 2000; border-radius: 0.5rem; overflow: hidden;">
             <a class="dropdown-item" th:href="@{/createBuild}">Create Builds</a>
             <a class="dropdown-item" th:href="@{/viewBuilds}">View Builds</a>
           </div>
         </li>
       </ul>
 
-      <!-- Logout Button -->
+      <!-- Logout -->
       <ul class="navbar-nav ml-auto">
         <li class="nav-item">
           <form th:action="@{/logout}" method="post" class="form-inline">
-            <button type="submit" class="btn btn-block border">
-              <i class="bi bi-box-arrow-right"></i> Logout
+            <button type="submit" class="btn btn-outline-dark"
+                    style="border-radius: 25px; padding: 5px 15px;">
+              <i class="bi bi-box-arrow-right mr-2"></i> Logout
             </button>
           </form>
         </li>
       </ul>
     </div>
   </nav>
+
+  <!-- Optional JS to enhance dropdown on hover -->
+  <script>
+    document.querySelectorAll('.nav-item.dropdown').forEach(function (item) {
+      item.addEventListener('mouseenter', function () {
+        const menu = item.querySelector('.dropdown-menu');
+        if (menu) {
+          menu.style.display = 'block';
+        }
+      });
+      item.addEventListener('mouseleave', function () {
+        const menu = item.querySelector('.dropdown-menu');
+        if (menu) {
+          menu.style.display = 'none';
+        }
+      });
+    });
+  </script>
 </div>

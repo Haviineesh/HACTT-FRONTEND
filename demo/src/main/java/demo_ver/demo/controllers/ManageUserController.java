@@ -49,7 +49,7 @@ public class ManageUserController {
         model.addAttribute("isProjectManager", isProjectManager);
 
         model.addAttribute("isAdmin", isAdmin);
-        model.addAttribute("users", ManageUserService.getAllUsers());
+        model.addAttribute("users", manageUserService.getAllUsers());
         return "ManageUser";
     }
 
@@ -89,7 +89,7 @@ public class ManageUserController {
 
     @GetMapping("/edituser/{userID}")
     public String showEditUserForm(@PathVariable("userID") int userID, Model model) {
-        ManageUser userToEdit = ManageUserService.getUserById(userID);
+        ManageUser userToEdit = manageUserService.getUserById(userID);
         model.addAttribute("manageUser", userToEdit);
         model.addAttribute("roles", manageRoleService.getAllRoles());
         return "ManageUserEdit"; //
@@ -114,6 +114,12 @@ public class ManageUserController {
             // model.addAttribute("roles", ManageRoleService.getAllRoles()); // Remove from
             // here
             return "ManageUserEdit";
+        }
+
+        ManageUser originalUser = manageUserService.getUserById(manageUser.getUserID());
+        if (originalUser != null) {
+            manageUser.setPassword(originalUser.getPassword());
+            manageUser.setResetToken(originalUser.getResetToken());
         }
 
         manageUserService.updateUser(manageUser, roleID);

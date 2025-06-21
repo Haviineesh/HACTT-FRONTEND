@@ -30,13 +30,15 @@ public class TestCase {
     private String status;
     private List<String> tcSteps;
     private List<String> expectedResults;
+    private String testCaseVersion;
 
     public TestCase() {
 
     }
 
     public TestCase(String status, Long idtest_cases, String projectId, String testCaseName,
-            String test_desc, String dateCreated, String deadline, String overallStatus, List<Integer> userID) {
+            String test_desc, String dateCreated, String deadline, String overallStatus, List<Integer> userID,
+            String testCaseVersion) {
         this.status = status;
         this.idtest_cases = idtest_cases;
         this.projectId = projectId;
@@ -46,6 +48,7 @@ public class TestCase {
         this.deadline = deadline;
         this.overallStatus = overallStatus;
         this.userID = userID;
+        this.testCaseVersion = testCaseVersion;
 
     }
 
@@ -180,10 +183,10 @@ public class TestCase {
     }
 
     // Method to get usernames of assigned users
-    public List<String> getUsernames() {
+    public List<String> getUsernames(ManageUserService manageUserService) {
         return userID.stream()
                 .map(userId -> {
-                    ManageUser user = ManageUserService.getUserById(userId);
+                    ManageUser user = manageUserService.getUserById(userId);
                     return (user != null) ? user.getUsername() : "";
                 })
                 .collect(Collectors.toList());
@@ -203,6 +206,14 @@ public class TestCase {
 
     public void setExpectedResults(List<String> expectedResults) {
         this.expectedResults = expectedResults;
+    }
+
+    public String getTestCaseVersion() {
+        return testCaseVersion;
+    }
+
+    public void setTestCaseVersion(String testCaseVersion) {
+        this.testCaseVersion = testCaseVersion;
     }
 
     // Method to determine overall status based on user statuses

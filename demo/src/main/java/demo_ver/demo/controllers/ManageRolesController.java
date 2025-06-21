@@ -41,11 +41,11 @@ public class ManageRolesController {
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_Admin"));
 
         boolean isProjectManager = authorities.stream()
-            .anyMatch(authority -> authority.getAuthority().equals("ROLE_Project_Manager"));
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_Project_Manager"));
 
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("isProjectManager", isProjectManager);
-        model.addAttribute("roles", manageRoleService.apiGetAllRoles());
+        model.addAttribute("roles", manageRoleService.getAllRoles());
         return "ManageRoles";
     }
 
@@ -63,14 +63,15 @@ public class ManageRolesController {
             return "ManageRolesNew";
         }
 
-        manageRoleService.apiAddRole(manageRole);// save product into database,
+        manageRoleService.createRole(manageRole.getRoleName(), manageRole.getDescription(), "true");// save product into
+                                                                                                    // database,
         // model.addAttribute("manageRole", manageRole);
         return "redirect:/manageroles";
     }
 
     @GetMapping("/editrole/{id}")
     public String editManagerole(@PathVariable("id") int id, Model model) {
-        ManageRole role = manageRoleService.apiFindById(id);
+        ManageRole role = manageRoleService.viewRoleById(String.valueOf(id));
         // Remove "ROLE_" if it exists in roleName
         String roleNameWithoutPrefix = role.getRoleName().startsWith("ROLE_") ? role.getRoleName().substring(5)
                 : role.getRoleName();
@@ -82,7 +83,7 @@ public class ManageRolesController {
 
     @PostMapping("/editrole")
     public String updateManageRole(ManageRole manageRole, Model model) {
-        ResponseEntity<String> response = manageRoleService.apiUpdateManageRole(manageRole);
+        ResponseEntity<String> response = manageRoleService.updateRole(manageRole);
 
         if (response.getStatusCode().is2xxSuccessful()) {
             // Role updated successfully
@@ -97,7 +98,7 @@ public class ManageRolesController {
 
     @GetMapping("/deleterole/{id}")
     public String deleteRole(@PathVariable("id") int id) {
-        manageRoleService.apiDeleteRole(id);
+        manageRoleService.deleteRole(String.valueOf(id)); // Assuming you have a method to delete a role by id);
         return "redirect:/manageroles";
     }
 

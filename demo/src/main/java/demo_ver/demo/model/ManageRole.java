@@ -22,19 +22,24 @@ public class ManageRole {
     @JsonProperty("roleName")
     private String roleName;
 
+    @JsonProperty("isActive")
+    private String isActive; 
+
     public ManageRole() {
 
     }
 
-    public ManageRole(String roleName, String description) {
+    public ManageRole(String roleName, String description, String isActive) {
         this.roleName = roleName;
         this.description = description;
+        this.isActive = isActive;
     }
 
-    public ManageRole(int roleID, String roleName, String description) {
+    public ManageRole(int roleID, String roleName, String description, String isActive) {
         this.roleID = roleID;
         this.roleName = roleName;
         this.description = description;
+        this.isActive = isActive;
     }
 
     public String getDescription() {
@@ -59,6 +64,14 @@ public class ManageRole {
 
     public void setRoleName(String roleName) {
         this.roleName = roleName;
+    }
+
+    public String getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(String isActive) {
+        this.isActive = isActive;
     }
     
     // For role based authorization

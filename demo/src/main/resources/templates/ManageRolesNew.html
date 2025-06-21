@@ -19,31 +19,45 @@
 </head>
 
 <body>
-  <div class="container p-3 mt-3 mb-3 border border-secondary rounded">
-    <form method="post" action="/createrole">
-      <div class="mb-3 d-flex justify-content-center">
-        <h3>Create New Role</h3>
+  <div class="container mt-5">
+    <div class="card shadow-sm border rounded">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Create New Role</h5>
       </div>
-      <p>
-        <label class="col-3" for="roleName">Role Name:</label>
-        <input type="text" name="roleName" id="roleName" placeholder="name" required/>
-        <div th:if="${roleExists}" class="alert alert-danger" role="alert">
-          Role Name already exists!
-        </div>
-      </p>
-      <p>
-        <label class="col-3" for="description">Description:</label>
-        <textarea name="description" id="description" rows="3"></textarea>
-      </p>
-      <div class="form-group d-flex justify-content-start">
-        <button type="submit" class="btn btn-success">
-          Create <i class="bi bi-plus"></i>
-        </button>
-        <div class="ml-3">
-          <button type="button" class="btn btn-danger" onclick="window.location.href='/manageroles'">Cancel</button>
-        </div>
+      <div class="card-body">
+        <form method="post" action="/createrole">
+          <div class="form-group row">
+            <label for="roleName" class="col-sm-3 col-form-label">Role Name:</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" name="roleName" id="roleName" placeholder="Enter role name"
+                required />
+              <div th:if="${roleExists}" class="alert alert-danger mt-2" role="alert">
+                Role Name already exists!
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="description" class="col-sm-3 col-form-label">Description:</label>
+            <div class="col-sm-9">
+              <textarea class="form-control" name="description" id="description" rows="3"
+                placeholder="Enter description"></textarea>
+            </div>
+          </div>
+
+          <div class="form-group row mt-4">
+            <div class="col-sm-9 offset-sm-3 d-flex">
+              <button type="submit" class="btn btn-success">
+                <i class="bi bi-plus mr-1"></i> Create
+              </button>
+              <button type="button" class="btn btn-secondary ml-2" onclick="window.location.href='/manageroles'">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </form>
       </div>
-    </form>
+    </div>
   </div>
 </body>
 

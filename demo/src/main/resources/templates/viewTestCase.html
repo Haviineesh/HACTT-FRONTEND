@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8" />
+       <meta charset="UTF-8" />
     <title>View Test Case</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
@@ -11,8 +11,34 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <style>
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        h3 {
+            font-weight: bold;
+            color: #343a40;
+        }
+
+        .table thead th {
+            background-color: #343a40;
+            color: #ffffff;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        .table-bordered {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
         .action-column {
-            min-width: 235px;
+            min-width: 260px;
         }
 
         .status-column {
@@ -31,41 +57,99 @@
             min-width: 82px;
         }
 
+        .testversion-column {
+            min-width: 60px;
+        }
+
         .deadline-column {
             min-width: 110px;
         }
 
         .highlight {
             background-color: #f2f2f2;
-            /* Light grey background */
+            text-align: center;
+        }
+
+        .status-approve,
+        .status-reject,
+        .status-pending,
+        .status-needs-revision {
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: inline-block;
         }
 
         .status-approve {
-            background-color: #d9ecdd;
-            /* Light green background for approved */
-            color: green;
-            /* Green text for approved */
+            background-color: #e1f3e8;
+            color: #2e7d32;
         }
 
         .status-reject {
-            background-color: #f8e0e2;
-            /* Light red background for rejected */
-            color: red;
-            /* Red text for rejected */
+            background-color: #fbeaea;
+            color: #c62828;
         }
 
         .status-pending {
             background-color: #fff3cd;
-            /* Light yellow background for pending */
             color: #856404;
-            /* Dark yellow text for pending */
         }
 
         .status-needs-revision {
             background-color: #d6ebef;
-            /* Light blue background for needs revision */
             color: #0c5460;
-            /* Dark blue text for needs revision */
+        }
+
+        .clickable-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 5px solid transparent;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            background-color: #ffffff;
+        }
+
+        .clickable-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .clickable-card .card-body {
+            padding: 1.25rem;
+        }
+
+        .clickable-card h6 {
+            font-size: 0.95rem;
+            margin-bottom: 0.3rem;
+            letter-spacing: 0.5px;
+        }
+
+        .clickable-card h4 {
+            font-weight: bold;
+            font-size: 1.6rem;
+            margin: 0;
+        }
+
+        .form-control,
+        .btn {
+            border-radius: 0.375rem;
+        }
+
+        .btn-outline-warning,
+        .btn-outline-primary,
+        .btn-outline-danger {
+            border-width: 1.5px;
+        }
+
+        .btn-outline-warning:hover,
+        .btn-outline-primary:hover,
+        .btn-outline-danger:hover {
+            opacity: 0.85;
+        }
+
+        .modal-content {
+            border-radius: 1rem;
         }
     </style>
 </head>
@@ -73,99 +157,144 @@
 <body>
     <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-    <br />
-    <div class="container">
+    <!-- Summary Stats Row -->
+    <div class="row text-center mb-4 mt-4">
+        <div class="col-md-3 mb-2">
+            <div class="card border-left-success shadow-sm h-100 py-2 clickable-card" data-status="">
+                <div class="card-body">
+                    <h6 class="text-primary font-weight-bold">Total Test Cases</h6>
+                    <h4 th:text="${testCase.size()}">0</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-2">
+            <div class="card border-left-success shadow-sm h-100 py-2 clickable-card" data-status="Approved">
+                <div class="card-body">
+                    <h6 class="text-success font-weight-bold">Approved</h6>
+                    <h4 th:text="${#lists.size(testCase.?[overallStatus == 'Approved'])}">0</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-2">
+            <div class="card border-left-success shadow-sm h-100 py-2 clickable-card" data-status="Pending">
+                <div class="card-body">
+                    <h6 class="text-warning font-weight-bold">Pending</h6>
+                    <h4 th:text="${#lists.size(testCase.?[overallStatus == 'Pending'])}">0</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-2">
+            <div class="card border-left-success shadow-sm h-100 py-2 clickable-card" data-status="Rejected">
+                <div class="card-body">
+                    <h6 class="text-danger font-weight-bold">Rejected</h6>
+                    <h4 th:text="${#lists.size(testCase.?[overallStatus == 'Rejected'])}">0</h4>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        <!-- Search Box with Filter Options -->
-        <div class="form-group">
-            <input type="text" class="form-control" id="searchInput" placeholder="Search..." />
+    <div class="container mt-4 p-4 border rounded bg-white shadow-sm">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3>Test Case Overview</h3>
+            <div th:if="${isTester}">
+                <button type="button" data-target="#addModal" data-toggle="modal" class="btn btn-success">
+                    Create New Test Case <i class="bi bi-plus"></i>
+                </button>
+            </div>
         </div>
 
-        <div class="mt-3 mb-3 d-flex justify-content-end">
-            <button th:if="${isTester}" type="button" data-target="#addModal" data-toggle="modal"
-                class="btn btn-success">Create New Test
-                Case <i class="bi bi-plus"></i></button>
+        <!-- Search Box with Clear Filter -->
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-9 col-sm-8 mb-2 mb-sm-0">
+                <input type="text" class="form-control" id="searchInput" placeholder="Search test cases..." />
+            </div>
+            <div class="col-md-3 col-sm-4 text-sm-right text-left">
+                <button class="btn btn-outline-secondary w-100 w-sm-auto"
+                    onclick="$('#searchInput').val('').trigger('keyup')">
+                    <i class="bi bi-x-circle"></i> Clear Filter
+                </button>
+            </div>
         </div>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th scope="col" class="projectid-column">Project ID</th>
-                    <th scope="col" class="testcaseid-column ">Test Case ID</th>
-                    <th scope="col">Test Case Name</th>
-                    <th scope="col" class="deadline-column ">Deadline</th>
-                    <th scope="col" class="users1-column">Users</th>
-                    <th scope="col" class="userstatus-column">User Statuses</th>
-                    <th scope="col" th:unless="${isTester}" class="status-column">Status Approval</th>
-                    <th scope="col" class="highlight">Overall Status</th>
-                    <th scope="col" class="action-column">Actions</th>
-                    <!-- Column for notification -->
 
 
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="test, iStat : ${testCase}">
-                    <!-- <tr th:each="test, iStat : ${allTestCases}"> -->
-                    <td th:text="${test.projectId}"></td>
-                    <td th:text="${test.idtest_cases}"></td>
-                    <td th:text="${test.testCaseName}"></td>
-                    <td th:text="${test.deadline}"></td>
-                    <td th:text="${test.username}"></td>
-                    <td>
-                        <div th:each="userStatus : ${test.userStatuses}">
-                            <span th:text="${userStatus.key}">Username</span>: <span
-                                th:text="${userStatus.value}">Status</span><br />
-                        </div>  
-                    </td>
-                    <td th:unless="${test.overallStatus == 'Approved'} OR ${isTester}">
-                        <form th:action="@{/setUserStatus}" method="post">
-                            <input type="hidden" th:name="testCaseId" th:value="${test.idtest_cases}" />
-                            <input type="hidden" id="rejectionReasonInput" name="rejectionReason" />
-                            <select name="status" onchange="handleStatusChange(this)" data-previous-value="Pending">
-                                <option value="Pending">Pending</option>
-                                <option value="Approved">Approved</option>
-                                <option value="Rejected">Rejected</option>
-                                <!-- <option value="Under Review">Under Review</option>
-                                <option value="Needs Revision">Needs Revision</option> -->
-
-                            </select>
-                            <button type="submit" class="btn btn-primary mt-1">Set Status</button>
-                        </form>
-                    </td>
-                    <td th:unless="${isTester}" th:if="${test.overallStatus == 'Approved'}">
-                        <button type="button" class="btn btn-secondary disabled" data-toggle="tooltip"
-                            data-placement="top" title="Unable to change test case status after Approved">
-                            <i class="bi bi-info-circle"></i>
-                        </button>
-                    </td>
-                    <td>
-                        <span th:class="${test.overallStatus == 'Approved' ? 'status-approve' : 
-                                          test.overallStatus == 'Rejected' ? 'status-reject' : 
-                                          test.overallStatus == 'Pending' ? 'status-pending' : 
-                                          test.overallStatus == 'Needs Revision' ? 'status-needs-revision' : ''}"
-                            th:text="${test.overallStatus}">
-                        </span>
-                    </td>
-                    <td>
-
-                        <a class="btn btn-primary" th:href="@{'/testcases/details/'+${test.idtest_cases}}">
-                            Details
-                        </a>
-                        <a class="btn btn-warning" th:unless="${test.overallStatus == 'Approved'}" th:if="${isTester}"
-                            th:href="@{'/editCase/' +${test.idtest_cases}}">
-                            Edit
-                        </a>
-                        <a class="btn btn-danger"
-                            th:unless="${test.overallStatus == 'Approved'} OR ${test.overallStatus == 'Rejected'}"
-                            th:if="${isTester}" data-toggle="modal"
-                            th:attr=" data-target= '#deleteModal'+ ${test.idtest_cases}">
-                            Delete
-                        </a>
-                    </td>
-
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th class="projectid-column">Project ID</th>
+                        <th class="testversion-column">Version</th>
+                        <th class="testcaseid-column">Test Case ID</th>
+                        <th>Test Case Name</th>
+                        <th class="deadline-column">Deadline</th>
+                        <th>Users</th>
+                        <th class="userstatus-column">User Statuses</th>
+                        <th th:unless="${isTester}" class="status-column">Status Approval</th>
+                        <th class="highlight">Overall Status</th>
+                        <th class="action-column">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="test : ${testCase}">
+                        <td th:text="${test.projectId}"></td>
+                        <td th:text="${test.testCaseVersion}"></td>
+                        <td th:text="${test.idtest_cases}"></td>
+                        <td th:text="${test.testCaseName}"></td>
+                        <td th:text="${test.deadline}"></td>
+                        <td th:text="${test.username}"></td>
+                        <td>
+                            <div th:each="userStatus : ${test.userStatuses}" class="mb-1">
+                                <strong th:text="${userStatus.key}"></strong>: <span
+                                    th:text="${userStatus.value}"></span>
+                            </div>
+                        </td>
+                        <td th:unless="${test.overallStatus == 'Approved'} OR ${isTester}">
+                            <form th:action="@{/setUserStatus}" method="post">
+                                <input type="hidden" th:name="testCaseId" th:value="${test.idtest_cases}" />
+                                <input type="hidden" th:id="'rejectionReasonInput' + ${test.idtest_cases}"
+                                    name="rejectionReason" />
+                                <select name="status" onchange="handleStatusChange(this)"
+                                    class="form-control form-control-sm mt-1">
+                                    <option value="Pending">Pending</option>
+                                    <option value="Approved">Approved</option>
+                                    <option value="Rejected">Rejected</option>
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-primary mt-2">Set Status</button>
+                            </form>
+                        </td>
+                        <td th:unless="${isTester}" th:if="${test.overallStatus == 'Approved'}">
+                            <span class="badge badge-secondary">Locked</span>
+                        </td>
+                        <td  class="overall-status">
+                            <span th:class="${test.overallStatus == 'Approved' ? 'status-approve' : 
+                                              test.overallStatus == 'Rejected' ? 'status-reject' : 
+                                              test.overallStatus == 'Pending' ? 'status-pending' : 
+                                              test.overallStatus == 'Needs Revision' ? 'status-needs-revision' : ''}"
+                                th:text="${test.overallStatus}">
+                            </span>
+                        </td>
+                        <td>
+                            <div>
+                                <a class="btn btn-sm btn-outline-primary mb-1"
+                                    th:href="@{'/testcases/details/'+${test.idtest_cases}}">
+                                    <i class="bi bi-eye"></i> Details
+                                </a>
+                                <a class="btn btn-sm btn-outline-warning mb-1"
+                                    th:unless="${test.overallStatus == 'Approved'}" th:if="${isTester}"
+                                    th:href="@{'/editCase/' +${test.idtest_cases}}">
+                                    <i class="bi bi-pencil-square"></i> Edit
+                                </a>
+                                <a class="btn btn-sm btn-outline-danger mb-1"
+                                    th:unless="${test.overallStatus == 'Approved'} OR ${test.overallStatus == 'Rejected'}"
+                                    th:if="${isTester}" data-toggle="modal"
+                                    th:attr="data-target= '#deleteModal'+ ${test.idtest_cases}">
+                                    <i class="bi bi-pencil-square"></i> Delete
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Add Modal -->
@@ -255,78 +384,57 @@
     <script>
 
         function handleStatusChange(selectElement) {
-            const status = selectElement.value;
-            const rejectionReasonInput = document.getElementById('rejectionReasonInput');
+            const form = selectElement.closest("form");
+            const rejectionReasonInput = form.querySelector("input[name='rejectionReason']");
 
-            if (status === 'Rejected') {
-                // const title = "Rejection Reason"; // Customize the title here (optional)
-                // const reason = prompt(title, "");  // Provide an empty default value (optional)
+            if (selectElement.value === 'Rejected') {
                 let reason;
                 do {
-                    const title = "Rejection Reason (Minimum 2 Words)"; // Customize the title here
-                    reason = prompt(title, "");  // Provide an empty default value
+                    const title = "Rejection Reason (Minimum 2 Words)";
+                    reason = prompt(title, "");  // Prompt user
 
-                    // Validate reason by splitting words and checking length
                     if (reason !== null) {
-                        const words = reason.trim().split(/\s+/); // Split on whitespace (including spaces, tabs, newlines)
+                        const words = reason.trim().split(/\s+/);
                         if (words.length < 2) {
                             alert("Please enter at least 2 words for the rejection reason.");
                             selectElement.value = "Pending";
                             selectElement.dataset.previousValue = "Pending";
                         }
                     }
-                } while (reason !== null && words.length < 3); // Repeat until reason is valid or cancelled
+                } while (reason !== null && reason.trim().split(/\s+/).length < 2);
 
                 if (reason !== null) {
                     rejectionReasonInput.value = reason;
                 } else {
-                    // Only set previousValue to Pending if reason is null (cancelled)
                     selectElement.value = "Pending";
                     selectElement.dataset.previousValue = "Pending";
                 }
             }
 
-            // Update previousValue regardless of selection (optional)
-            selectElement.dataset.previousValue = status;
+            selectElement.dataset.previousValue = selectElement.value;
         }
 
-        $(document).ready(function () {
-            // Filtering logic
-            $("#searchInput").on("keyup", function () {
-                var value = $(this).val().toLowerCase();
-                $("tbody tr").filter(function () {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-                });
+
+        $(".clickable-card").on("click", function () {
+            const status = $(this).data("status");
+
+            $("tbody tr").each(function () {
+                const rowStatus = $(this).find(".overall-status").text().trim();
+
+                // Show all if status is empty (Total Test Cases card)
+                if (!status || status === "") {
+                    $(this).show();
+                } else {
+                    if (rowStatus === status) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                }
             });
-
-            // Dynamic user role update
-            var userRole = "Default User";
-
-            function updateUserRole(role) {
-                userRole = role;
-                $(".user-role").text(userRole);
-            }
-
-            // Set initial active state based on the URL or other criteria
-            var currentPage = window.location.pathname;
-            if (currentPage.includes("/view")) {
-                $("#test-case-link").addClass("active");
-            }
-
-            $(document).on("click", "#test-case-link", function (e) {
-                e.preventDefault();
-                updateUserRole("Tester");
-                // Remove active class from other links and add to the clicked link
-                $(".nav-item").removeClass("active");
-                $(this).addClass("active");
-            });
-
-            // Add similar event handlers for other menu items as needed
         });
+
     </script>
 </body>
-
-
-
 
 </html>

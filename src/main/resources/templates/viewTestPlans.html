@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Plans List</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    <!-- Include the Navbar fragment -->
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container mt-4">
+        <h1 class="mb-4">Test Plans List</h1>
+
+        <!-- Display Success or Error Message -->
+        <div th:if="${success != null}" class="alert alert-success">
+            <span th:text="${success}"></span>
+        </div>
+        <div th:if="${error != null}" class="alert alert-danger">
+            <span th:text="${error}"></span>
+        </div>
+        <!-- Filter and Search Section -->
+
+        <!-- Table of Test Plans -->
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Active</th>
+                    <th>Public</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="testPlan : ${testPlans}">
+                    <td class="align-middle" th:text="${testPlan.testPlanName}"></td>
+                    <td class="align-middle" th:text="${testPlan.isActive ? 'Yes' : 'No'}"></td>
+                    <td class="align-middle" th:text="${testPlan.isPublic ? 'Yes' : 'No'}"></td>
+                    <td class="align-middle">
+                        <!-- View button (always visible) -->
+                        <a th:href="@{/viewTestPlanDetails/{id}(id=${testPlan.testPlanID})}"
+                            class="btn btn-info">View</a>
+
+                        <!-- Only show Edit and Delete options if the user is not a Stakeholder -->
+                        <span th:if="${!isStakeholder}">
+                            <a th:href="@{/editTestPlan(id=${testPlan.testPlanID})}" class="btn btn-warning">Edit</a>
+
+                            <!-- Trigger the delete confirmation modal -->
+                            <button type="button" class="btn btn-danger" data-toggle="modal"
+                                th:data-target="'#deleteModal' + ${testPlan.testPlanID}">
+                                Delete
+                            </button>
+
+                            <!-- Modal Structure for Delete Confirmation -->
+                            <div class="modal fade" th:id="'deleteModal' + ${testPlan.testPlanID}" tabindex="-1"
+                                role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to delete this test plan?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-dismiss="modal">Cancel</button>
+                                            <form th:action="@{/deleteTestPlan(id=${testPlan.testPlanID})}"
+                                                method="post" style="display: inline;">
+                                                <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Create New Test Plan Button - Visible only if user is not a Stakeholder -->
+        <div th:if="${!isStakeholder}">
+            <a href="/createTestPlan" class="btn btn-primary">Create New Test Plan</a>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS (for modals) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

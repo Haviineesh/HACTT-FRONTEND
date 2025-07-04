@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Test Suite</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- CKEditor -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/38.0.1/classic/ckeditor.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-label {
+            font-weight: bold;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            padding: 10px;
+        }
+
+        .btn-submit:hover {
+            background-color: #0056b3;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Include the Navbar fragment -->
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <!-- Form for editing a test suite -->
+    <div class="container">
+        <h2>Edit Test Suite</h2>
+        <form action="/editTestSuite" method="POST">
+            <!-- Hidden field for the test suite ID -->
+            <input type="hidden" name="testSuiteID" th:value="${testSuite.testSuiteID}">
+            <input type="hidden" name="createdBy" th:value="${testSuite.createdBy}">
+            <input type="hidden" name="dateCreated" th:value="${testSuite.dateCreated}">
+
+            <div class="form-group">
+                <label for="testSuiteName" class="form-label">Test Suite Name:</label>
+                <input type="text" class="form-control" id="testSuiteName" name="testSuiteName"
+                    th:value="${testSuite.testSuiteName}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="testSuiteDesc" class="form-label">Description:</label>
+                <!-- Larger text area for CKEditor -->
+                <textarea id="testSuiteDesc" name="testSuiteDesc" class="form-control" rows="10"
+                    th:text="${testSuite.testSuiteDesc}"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="testSuiteStatus" class="form-label">Status:</label>
+                <select id="testSuiteStatus" name="testSuiteStatus" class="form-control">
+                    <option value="In-progress" th:selected="${testSuite.testSuiteStatus == 'In-progress'}">In-progress
+                    </option>
+                    <option value="Active" th:selected="${testSuite.testSuiteStatus == 'Active'}">Active</option>
+                    <option value="Completed" th:selected="${testSuite.testSuiteStatus == 'Completed'}">Completed
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="importance" class="form-label">Importance:</label>
+                <select id="importance" name="importance" class="form-control">
+                    <option value="Low" th:selected="${testSuite.importance == 'Low'}">Low</option>
+                    <option value="Medium" th:selected="${testSuite.importance == 'Medium'}">Medium</option>
+                    <option value="High" th:selected="${testSuite.importance == 'High'}">High</option>
+                </select>
+            </div>
+
+            <!-- <div class="form-group">
+                <label for="testCases" class="form-label">Test Cases:</label>
+                <textarea id="testCases" name="testCases" class="form-control" rows="5"
+                    th:text="${testSuite.testCases}"></textarea>
+                <small class="form-text text-muted">List associated test cases, separated by commas.</small>
+            </div> -->
+
+            <!--<label for="testPlans" class="form-label">Select Test Plans:</label>
+            <div>-->
+            <!-- Dynamically generate checkboxes for test plans -->
+            <!--<ul>
+                    <li th:each="testPlan : ${testPlans}" class="form-check">
+                        <span th:text="${testPlan.testPlanID}">Test Plan ID</span> -
+                        <span th:text="${testPlan.testPlanName}">Test Plan Name</span>
+                        <input type="checkbox" th:id="'assignedTestPlanIDs' + ${testPlan.testPlanID}"
+                            th:name="'assignedTestPlanIDs'" th:value="${testPlan.testPlanID}" />
+                    </li>
+
+                </ul>
+            </div>-->
+
+            <button type="submit" class="btn btn-submit">Update Test Suite</button>
+        </form>
+        <br>
+        <a class="back-link" href="/viewTestSuites">Back to Test Suites List</a>
+    </div>
+
+    <!-- Initialize CKEditor for the description field -->
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#testSuiteDesc'))
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
+</body>
+
+</html>

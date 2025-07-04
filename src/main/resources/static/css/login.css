@@ -1,0 +1,53 @@
+/* login.css
+body {
+    background-color: white;
+}
+
+.login-container {
+    max-width: 400px;
+    margin: 0 auto;
+    margin-top: 100px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.login-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.login-container form {
+    margin-top: 20px;
+}
+
+.login-container a {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+} */
+
+
+/* viewTestCase.css */
+
+table {
+    width: 50%;
+    border-collapse: collapse;
+    margin: 20px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #ff66b2;
+}
+
+.modal-body {
+    text-align: center;
+}
+
+/* viewTestCase.css */

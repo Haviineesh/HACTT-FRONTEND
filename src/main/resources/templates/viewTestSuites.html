@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Suites List</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <!-- <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="/viewTestSuites">Test Suites</a>
+    </nav> -->
+
+    <div th:replace="fragments/navbar :: navbar"></div>
+
+    <div class="container mt-4">
+        <h1>Test Suites List</h1>
+
+        <!-- Description Section -->
+        <div class="alert alert-info">
+            <p>
+                Test suites are logical groupings of test cases used to run a series of test scenarios in a single job.
+                A test suite acts as a container for test cases, each addressing specific functionality, such as:
+            </p>
+            <ul>
+                <li>Test Case 1: Login</li>
+                <li>Test Case 2: Adding Products</li>
+                <li>Test Case 3: Checkout</li>
+                <li>Test Case 4: Logout</li>
+            </ul>
+            <p>
+                Test suites can have various statuses like "In-progress," "Active," or "Completed." They serve as
+                validation suites with information on different test cases, objectives, and system configurations.
+            </p>
+        </div>
+
+        <!-- Display Success or Error Message -->
+        <div th:if="${success != null}" class="alert alert-success">
+            <span th:text="${success}"></span>
+        </div>
+        <div th:if="${error != null}" class="alert alert-danger">
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- Table of Test Suites -->
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Test Case(s)</th>
+                    <th>Status</th>
+                    <th>Importance</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="testSuite : ${testSuites}">
+                    <td th:text="${testSuite.testSuiteName}"></td>
+                    <td>
+                        <p th:utext="${testSuite.testSuiteDesc}"></p>
+                    </td>
+                    <td th:text="none"></td>
+
+                    <td th:text="${testSuite.testSuiteStatus}"></td>
+                    <td th:text="${testSuite.importance}"></td>
+
+                    <td>
+                        <!-- View Details Button as a link styled as a button -->
+                        <a th:href="@{/viewTestSuite(testSuiteID=${testSuite.testSuiteID})}" class="btn btn-info">View
+                            Details</a>
+
+                        <!-- Edit Button as a link styled as a button -->
+                        <a th:href="@{/editTestSuite(testSuiteID=${testSuite.testSuiteID})}"
+                            class="btn btn-warning">Edit</a>
+
+                        <!-- Delete Button -->
+                        <!-- Button to trigger modal -->
+                        <button type="button" class="btn btn-danger" data-toggle="modal"
+                            th:data-target="'#deleteModal-' + ${testSuite.testSuiteID}">
+                            Delete
+                        </button>
+
+                        <!-- Modal Structure -->
+                        <div class="modal fade" th:id="'deleteModal-' + ${testSuite.testSuiteID}" tabindex="-1"
+                            role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to delete this test suite?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Cancel</button>
+                                        <!-- Form to submit the delete request -->
+                                        <form th:action="@{/deleteTestSuite(testSuiteID=${testSuite.testSuiteID})}"
+                                            method="post" style="display: inline;">
+                                            <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <a href="/createTestSuite" class="btn btn-primary">Create New Test Suite</a>
+    </div>
+
+    <!-- Optional: Include Bootstrap JS (for things like modals, dropdowns, etc.) -->
+    <!-- jQuery and Bootstrap JS (required for modal) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

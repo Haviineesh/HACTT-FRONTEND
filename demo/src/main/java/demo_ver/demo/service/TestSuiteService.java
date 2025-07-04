@@ -37,7 +37,7 @@ import demo_ver.demo.model.TestSuite;
 public class TestSuiteService {
 
     private static final Logger logger = LoggerFactory.getLogger(TestSuiteService.class);
-    private static final String HYPERLEDGER_BASE_URL = "https://dee1-113-211-96-19.ngrok-free.app";
+    private static final String HYPERLEDGER_BASE_URL = "https://562e-14-192-212-128.ngrok-free.app";
 
     @Autowired
     private RestTemplate restTemplate = new RestTemplate();

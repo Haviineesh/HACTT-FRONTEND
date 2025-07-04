@@ -1,1 +1,1 @@
-web: cd demo && mvn spring-boot:run
+web: cd demo && ./mvnw spring-boot:run

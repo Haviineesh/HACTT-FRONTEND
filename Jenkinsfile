@@ -8,7 +8,7 @@ pipeline {
   stages {
     stage('Checkout Code') {
       steps {
-        git credentialsId: 'github-credentials', url: 'https://github.com/Haviineesh/HACTT-FRONTEND.git'
+        git url: 'https://Haviineesh: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@github.com/Haviineesh/HACTT-FRONTEND.git', branch: 'main'
       }
     }
 

@@ -1,21 +1,45 @@
+# apiVersion: apps/v1
+# kind: Deployment # Kubernetes resource kind we are creating
+# metadata:
+#   name: spring-boot-hyperagile-deployment
+# spec:
+#   selector:
+#     matchLabels:
+#       app: spring-boot-hyperagile-complete
+#   replicas: 2 # number of replicas that will be created this deployment
+#   template:
+#     metadata:
+#       labels:
+#         app: spring-boot-hyperagile-complete
+#     spec:
+#       containers:
+#         - name: spring-boot-hyperagile-complete
+#           image: kasyfi/hyperagileimage1 # Image that will be used in the cluster
+#           imagePullPolicy: IfNotPresent
+#           ports:
+#             - containerPort: 8084
+
 apiVersion: apps/v1
-kind: Deployment # Kubernetes resource kind we are creating
+kind: Deployment
 metadata:
-  name: spring-boot-hyperagile-deployment
+  name: hactt-demo-deployment
+  labels:
+    app: hactt-demo
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      app: spring-boot-hyperagile-complete
-  replicas: 2 # number of replicas that will be created this deployment
+      app: hactt-demo
   template:
     metadata:
       labels:
-        app: spring-boot-hyperagile-complete
+        app: hactt-demo
     spec:
       containers:
-        - name: spring-boot-hyperagile-complete
-          image: kasyfi/hyperagileimage1 # Image that will be used in the cluster
-          imagePullPolicy: IfNotPresent
+        - name: hactt-demo
+          image: haviineesh/hactt-demo:latest
           ports:
-            - containerPort: 8084
+            - containerPort: 8080
+          imagePullPolicy: Always
+
 

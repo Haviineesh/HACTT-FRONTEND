@@ -1,12 +1,26 @@
-apiVersion: v1 # Kubernetes API version
-kind: Service # Kubernetes resource kind we are creating
-metadata: # Metadata of the resource
-  name: spring-boot-hyperagile
+# apiVersion: v1 # Kubernetes API version
+# kind: Service # Kubernetes resource kind we are creating
+# metadata: # Metadata of the resource
+#   name: spring-boot-hyperagile
+# spec:
+#   type: LoadBalancer
+#   selector:
+#     app: spring-boot-hyperagile-complete
+#   ports:
+#     - protocol: TCP
+#       port: 8084 # The port the service is running on in the clustor
+#       targetPort: 8084 # The port exposed by the service
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: hactt-demo-service
 spec:
-  type: LoadBalancer
+  type: NodePort
   selector:
-    app: spring-boot-hyperagile-complete
+    app: hactt-demo
   ports:
     - protocol: TCP
-      port: 8084 # The port the service is running on in the clustor
-      targetPort: 8084 # The port exposed by the service
+      port: 8080
+      targetPort: 8080
+      nodePort: 30080

@@ -35,7 +35,7 @@ import demo_ver.demo.model.TestPlan;
 public class TestPlanService {
 
     private static final Logger logger = LoggerFactory.getLogger(TestPlanService.class);
-    private static final String HYPERLEDGER_BASE_URL = "https://67cf-113-211-119-131.ngrok-free.app";
+    private static final String HYPERLEDGER_BASE_URL = "https://c1de-161-139-102-63.ngrok-free.app";
     private final TestPlanAdapter testPlanAdapter;
 
     @Autowired

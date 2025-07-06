@@ -34,7 +34,7 @@ import demo_ver.demo.utils.RandomNumber;
 @Service
 public class ViewCaseService {
     private static final Logger logger = LoggerFactory.getLogger(ViewCaseService.class);
-    private static final String API_BASE_URL = "https://562e-14-192-212-128.ngrok-free.app";
+    private static final String API_BASE_URL = "https://67cf-113-211-119-131.ngrok-free.app";
 
     private final RestTemplate restTemplate;
     private final TestCaseAdapter testCaseAdapter;

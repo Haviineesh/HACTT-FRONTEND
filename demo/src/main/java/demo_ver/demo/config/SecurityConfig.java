@@ -1,5 +1,6 @@
 package demo_ver.demo.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -44,16 +45,24 @@ public class SecurityConfig extends WebSecurityConfiguration {
 
         private final RestTemplate restTemplate = new RestTemplate();
 
-        @Bean
-        public ManageUserService manageUserService(PasswordEncoder passwordEncoder, RestTemplate restTemplate) {
-                return new ManageUserService(passwordEncoder, restTemplate);
-        }
+        @Autowired
+        private ManageUserService manageUserService;
+
+        // @Bean
+        // public ManageUserService manageUserService(PasswordEncoder passwordEncoder,
+        // RestTemplate restTemplate) {
+        // return new ManageUserService(passwordEncoder, restTemplate);
+        // }
 
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 AuthenticationManagerBuilder authenticationManagerBuilder = http
                                 .getSharedObject(AuthenticationManagerBuilder.class);
-                authenticationManagerBuilder.userDetailsService(manageUserService(passwordEncoder(), restTemplate))
+                // authenticationManagerBuilder.userDetailsService(manageUserService(passwordEncoder(),
+                // restTemplate))
+                // .passwordEncoder(passwordEncoder());
+                authenticationManagerBuilder
+                                .userDetailsService(manageUserService)
                                 .passwordEncoder(passwordEncoder());
                 return http
                                 .formLogin(form -> form

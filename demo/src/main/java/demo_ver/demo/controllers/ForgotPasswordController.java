@@ -4,7 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import demo_ver.demo.model.ManageUser;
 import demo_ver.demo.service.EmailService;
 import demo_ver.demo.service.ManageUserService;
@@ -44,8 +47,8 @@ public class ForgotPasswordController {
         manageUserService.updateResetToken(user, resetToken);
 
         // Send the password reset email
-        String subject = "Password Reset";
-        String body = "Click the following link to reset your password: http://localhost:8090/resetpassword?token="
+        String subject = "HACTT Password Reset";
+        String body = "Click the following link to reset your password: https://hactt-e7444ee687a3.herokuapp.com/resetpassword?token="
                 + resetToken;
         emailService.sendPasswordResetEmail(userEmail, subject, body);
 

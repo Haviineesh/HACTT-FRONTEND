@@ -33,7 +33,7 @@ import demo_ver.demo.model.ManageUser;
 public class ManageUserService implements UserDetailsService {
 
     private static final Logger logger = LoggerFactory.getLogger(ManageUserService.class);
-    private static final String API_BASE_URL = "https://c1de-161-139-102-63.ngrok-free.app"; // Replace with your ngrok
+    private static final String API_BASE_URL = "https://8967-113-211-117-239.ngrok-free.app"; // Replace with your ngrok
                                                                                              // or actual API URL
 
     private final PasswordEncoder passwordEncoder;
